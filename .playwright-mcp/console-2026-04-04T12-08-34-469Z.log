@@ -1,0 +1,2 @@
+[    2623ms] [LOG] set currentOffer {question: What type of development do you primarily do?, type: multiple-choice, choices: Array(3), required: true, shuffleChoices: false} @ https://www.codewithantonio.com/_next/static/chunks/46f37cacf00de6ca.js?dpl=dpl_A5QmC1b7sRAFV5AkY3Lr23zgYgH5:1
+[    2625ms] [LOG] set currentOfferId type-of-development @ https://www.codewithantonio.com/_next/static/chunks/46f37cacf00de6ca.js?dpl=dpl_A5QmC1b7sRAFV5AkY3Lr23zgYgH5:1

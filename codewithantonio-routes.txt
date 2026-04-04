@@ -1,0 +1,39 @@
+Code with Antonio - Features and Routes
+Captured on: 2026-04-04
+
+FEATURES
+- Modern full-stack learning platform centered on real project builds.
+- Two learning formats: cohort-style programs and self-paced workshop content.
+- Cohort value proposition: guided participation, structured progression, and early-bird cohort notifications.
+- Workshop catalog includes multiple clone and SaaS builds (AI tools, finance, e-commerce, auth, collaboration, media).
+- Course discovery supports browse + search to quickly find content by interest and format.
+- Browse filters segment content into views such as Newest, Courses, and Cohorts.
+- Course cards expose practical metadata at a glance: chapter count and primary stack tags.
+- Deep curriculum routing model: each workshop has a root page plus many chapter/lesson-specific routes.
+- Account entry point via login route, indicating authenticated access paths for user-specific experiences.
+- Builder's List capture for product updates, cohort openings, and launch pricing announcements.
+- Standard marketing/site structure: Home, Browse, Contact, and Terms/Privacy pages.
+- Basic personalization affordance via theme toggle (light/dark UI switch).
+
+FEATURES_BY_TYPE
+- Learning: Cohort-based and self-paced formats designed around project-first full-stack development.
+- Learning: Practical curricula built from real product clones and SaaS implementations.
+- Discovery: Search-first and browse-first discovery paths for quickly finding relevant courses.
+- Discovery: Filtered browse views (for example Newest, Courses, Cohorts) to reduce decision friction.
+- Content Depth: Workshop root pages plus chapter/lesson route structure for granular progression.
+- Content Depth: Course cards expose stack details and chapter counts before enrollment.
+- Platform/Access: Login entry point indicates authenticated access for personalized user flows.
+- Platform/Access: Builder's List subscription for updates, launches, and cohort enrollment windows.
+- Site Experience: Core marketing/navigation pages include Home, Browse, Contact, and Terms/Privacy.
+- Site Experience: Theme toggle supports light/dark visual preference switching.
+
+ROUTES
+/ marketingsite (KCMTRADES.COM)
+/app (app.kcmtrades.com)
+/home
+/browse
+/courses
+/signup
+/login
+
+

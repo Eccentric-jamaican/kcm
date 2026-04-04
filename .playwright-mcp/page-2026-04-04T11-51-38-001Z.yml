@@ -1,0 +1,283 @@
+- generic [active] [ref=e1]:
+  - region "Notifications (F8)":
+    - list
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - link "Code with Antonio" [ref=e7] [cursor=pointer]:
+            - /url: /
+            - img "Code with Antonio" [ref=e8]
+          - navigation "Main" [ref=e10]:
+            - list [ref=e12]:
+              - listitem [ref=e13]:
+                - button "Browse" [ref=e14]:
+                  - text: Browse
+                  - img [ref=e15]
+        - navigation "User navigation" [ref=e17]:
+          - list [ref=e18]
+    - main [ref=e22]:
+      - generic [ref=e23]:
+        - complementary [ref=e24]:
+          - list [ref=e25]:
+            - listitem [ref=e26]:
+              - paragraph [ref=e27]: Browse by
+            - listitem [ref=e28]:
+              - button "Newest" [ref=e29] [cursor=pointer]
+            - listitem [ref=e30]:
+              - button "Courses" [pressed] [ref=e31] [cursor=pointer]
+            - listitem [ref=e32]:
+              - button "Cohorts" [ref=e33] [cursor=pointer]
+        - generic [ref=e34]:
+          - generic [ref=e37]:
+            - textbox "Search..." [ref=e38]
+            - img [ref=e39]
+          - list [ref=e43]:
+            - listitem [ref=e44]:
+              - link "Build and Deploy a Full Stack ElevenLabs Clone Build and Deploy a Full Stack ElevenLabs Clone Course Next.js React.js PostgresSQL Tailwind Prisma" [ref=e45] [cursor=pointer]:
+                - /url: /workshops/build-and-deploy-a-full-stack-elevenlabs-clone
+                - img "Build and Deploy a Full Stack ElevenLabs Clone" [ref=e47]
+                - generic [ref=e48]:
+                  - generic [ref=e49]:
+                    - heading "Build and Deploy a Full Stack ElevenLabs Clone" [level=2] [ref=e50]:
+                      - generic [ref=e51]: Build and Deploy a Full Stack ElevenLabs Clone
+                    - paragraph [ref=e52]: Course
+                  - generic [ref=e53]:
+                    - generic [ref=e54]: Next.js
+                    - generic [ref=e55]: React.js
+                    - generic [ref=e56]: PostgresSQL
+                    - generic [ref=e57]: Tailwind
+                    - generic [ref=e58]: Prisma
+            - listitem [ref=e59]:
+              - link "Build and Deploy a Cursor Clone Build and Deploy a Cursor Clone Course Next.js Convex React.js Tailwind" [ref=e60] [cursor=pointer]:
+                - /url: /workshops/build-and-deploy-a-cursor-clone
+                - img "Build and Deploy a Cursor Clone" [ref=e62]
+                - generic [ref=e63]:
+                  - generic [ref=e64]:
+                    - heading "Build and Deploy a Cursor Clone" [level=2] [ref=e65]:
+                      - generic [ref=e66]: Build and Deploy a Cursor Clone
+                    - paragraph [ref=e67]: Course
+                  - generic [ref=e68]:
+                    - generic [ref=e69]: Next.js
+                    - generic [ref=e70]: Convex
+                    - generic [ref=e71]: React.js
+                    - generic [ref=e72]: Tailwind
+            - listitem [ref=e73]:
+              - link "Build and Deploy an AI Automation SaaS Build and Deploy an AI Automation SaaS Course Next.js React.js Tailwind Prisma" [ref=e74] [cursor=pointer]:
+                - /url: /workshops/build-and-deploy-an-ai-automation-saas
+                - img "Build and Deploy an AI Automation SaaS" [ref=e76]
+                - generic [ref=e77]:
+                  - generic [ref=e78]:
+                    - heading "Build and Deploy an AI Automation SaaS" [level=2] [ref=e79]:
+                      - generic [ref=e80]: Build and Deploy an AI Automation SaaS
+                    - paragraph [ref=e81]: Course
+                  - generic [ref=e82]:
+                    - generic [ref=e83]: Next.js
+                    - generic [ref=e84]: React.js
+                    - generic [ref=e85]: Tailwind
+                    - generic [ref=e86]: Prisma
+            - listitem [ref=e87]:
+              - link "Build a Multi-Tenant E-Commerce with Next.js, Tailwind v4, Stripe Connect Build a Multi-Tenant E-Commerce with Next.js, Tailwind v4, Stripe Connect Course Next.js MongoDB Tailwind" [ref=e88] [cursor=pointer]:
+                - /url: /workshops/build-a-multi-tenant-e-commerce-with-nextjs-tailwind-v4-stripe-connect
+                - img "Build a Multi-Tenant E-Commerce with Next.js, Tailwind v4, Stripe Connect" [ref=e90]
+                - generic [ref=e91]:
+                  - generic [ref=e92]:
+                    - heading "Build a Multi-Tenant E-Commerce with Next.js, Tailwind v4, Stripe Connect" [level=2] [ref=e93]:
+                      - generic [ref=e94]: Build a Multi-Tenant E-Commerce with Next.js, Tailwind v4, Stripe Connect
+                    - paragraph [ref=e95]: Course
+                  - generic [ref=e96]:
+                    - generic [ref=e97]: Next.js
+                    - generic [ref=e98]: MongoDB
+                    - generic [ref=e99]: Tailwind
+            - listitem [ref=e100]:
+              - link "Build and Deploy a B2B SaaS AI Support Platform Build and Deploy a B2B SaaS AI Support Platform Course Next.js Convex React.js Node.js Tailwind" [ref=e101] [cursor=pointer]:
+                - /url: /workshops/build-and-deploy-a-b2b-saas-ai-support-platform
+                - img "Build and Deploy a B2B SaaS AI Support Platform" [ref=e103]
+                - generic [ref=e104]:
+                  - generic [ref=e105]:
+                    - heading "Build and Deploy a B2B SaaS AI Support Platform" [level=2] [ref=e106]:
+                      - generic [ref=e107]: Build and Deploy a B2B SaaS AI Support Platform
+                    - paragraph [ref=e108]: Course
+                  - generic [ref=e109]:
+                    - generic [ref=e110]: Next.js
+                    - generic [ref=e111]: Convex
+                    - generic [ref=e112]: React.js
+                    - generic [ref=e113]: Node.js
+                    - generic [ref=e114]: Tailwind
+            - listitem [ref=e115]:
+              - link "Build and Deploy a SaaS AI Website Builder Build and Deploy a SaaS AI Website Builder Course Next.js React.js Tailwind Prisma" [ref=e116] [cursor=pointer]:
+                - /url: /workshops/build-and-deploy-a-saas-ai-website-builder
+                - img "Build and Deploy a SaaS AI Website Builder" [ref=e118]
+                - generic [ref=e119]:
+                  - generic [ref=e120]:
+                    - heading "Build and Deploy a SaaS AI Website Builder" [level=2] [ref=e121]:
+                      - generic [ref=e122]: Build and Deploy a SaaS AI Website Builder
+                    - paragraph [ref=e123]: Course
+                  - generic [ref=e124]:
+                    - generic [ref=e125]: Next.js
+                    - generic [ref=e126]: React.js
+                    - generic [ref=e127]: Tailwind
+                    - generic [ref=e128]: Prisma
+            - listitem [ref=e129]:
+              - link "Youtube Clone Youtube Clone Course Next.js Drizzle PostgresSQL Tailwind" [ref=e130] [cursor=pointer]:
+                - /url: /workshops/youtube-clone
+                - img "Youtube Clone" [ref=e132]
+                - generic [ref=e133]:
+                  - generic [ref=e134]:
+                    - heading "Youtube Clone" [level=2] [ref=e135]:
+                      - generic [ref=e136]: Youtube Clone
+                    - paragraph [ref=e137]: Course
+                  - generic [ref=e138]:
+                    - generic [ref=e139]: Next.js
+                    - generic [ref=e140]: Drizzle
+                    - generic [ref=e141]: PostgresSQL
+                    - generic [ref=e142]: Tailwind
+            - listitem [ref=e143]:
+              - link "Twitch Clone Twitch Clone Course Next.js React.js MySQL Tailwind Prisma" [ref=e144] [cursor=pointer]:
+                - /url: /workshops/twitch-clone
+                - img "Twitch Clone" [ref=e146]
+                - generic [ref=e147]:
+                  - generic [ref=e148]:
+                    - heading "Twitch Clone" [level=2] [ref=e149]:
+                      - generic [ref=e150]: Twitch Clone
+                    - paragraph [ref=e151]: Course
+                  - generic [ref=e152]:
+                    - generic [ref=e153]: Next.js
+                    - generic [ref=e154]: React.js
+                    - generic [ref=e155]: MySQL
+                    - generic [ref=e156]: Tailwind
+                    - generic [ref=e157]: Prisma
+            - listitem [ref=e158]:
+              - link "Duolingo Clone Duolingo Clone Course Next.js React.js PostgresSQL Tailwind" [ref=e159] [cursor=pointer]:
+                - /url: /workshops/duolingo-clone
+                - img "Duolingo Clone" [ref=e161]
+                - generic [ref=e162]:
+                  - generic [ref=e163]:
+                    - heading "Duolingo Clone" [level=2] [ref=e164]:
+                      - generic [ref=e165]: Duolingo Clone
+                    - paragraph [ref=e166]: Course
+                  - generic [ref=e167]:
+                    - generic [ref=e168]: Next.js
+                    - generic [ref=e169]: React.js
+                    - generic [ref=e170]: PostgresSQL
+                    - generic [ref=e171]: Tailwind
+            - listitem [ref=e172]:
+              - link "Build a Real-Time Miro Clone Build a Real-Time Miro Clone Course Next.js Convex React.js Tailwind" [ref=e173] [cursor=pointer]:
+                - /url: /workshops/build-a-real-time-miro-clone
+                - img "Build a Real-Time Miro Clone" [ref=e175]
+                - generic [ref=e176]:
+                  - generic [ref=e177]:
+                    - heading "Build a Real-Time Miro Clone" [level=2] [ref=e178]:
+                      - generic [ref=e179]: Build a Real-Time Miro Clone
+                    - paragraph [ref=e180]: Course
+                  - generic [ref=e181]:
+                    - generic [ref=e182]: Next.js
+                    - generic [ref=e183]: Convex
+                    - generic [ref=e184]: React.js
+                    - generic [ref=e185]: Tailwind
+            - listitem [ref=e186]:
+              - link "Trello Clone Trello Clone Course Next.js React.js MySQL Tailwind Prisma" [ref=e187] [cursor=pointer]:
+                - /url: /workshops/trello-clone
+                - img "Trello Clone" [ref=e189]
+                - generic [ref=e190]:
+                  - generic [ref=e191]:
+                    - heading "Trello Clone" [level=2] [ref=e192]:
+                      - generic [ref=e193]: Trello Clone
+                    - paragraph [ref=e194]: Course
+                  - generic [ref=e195]:
+                    - generic [ref=e196]: Next.js
+                    - generic [ref=e197]: React.js
+                    - generic [ref=e198]: MySQL
+                    - generic [ref=e199]: Tailwind
+                    - generic [ref=e200]: Prisma
+            - listitem [ref=e201]:
+              - link "Build a Finance Platform Build a Finance Platform Course Next.js Hono Lemon Squeezy React.js Drizzle PostgresSQL Tailwind Plaid" [ref=e202] [cursor=pointer]:
+                - /url: /workshops/build-a-finance-platform
+                - img "Build a Finance Platform" [ref=e204]
+                - generic [ref=e205]:
+                  - generic [ref=e206]:
+                    - heading "Build a Finance Platform" [level=2] [ref=e207]:
+                      - generic [ref=e208]: Build a Finance Platform
+                    - paragraph [ref=e209]: Course
+                  - generic [ref=e210]:
+                    - generic [ref=e211]: Next.js
+                    - generic [ref=e212]: Hono
+                    - generic [ref=e213]: Lemon Squeezy
+                    - generic [ref=e214]: React.js
+                    - generic [ref=e215]: Drizzle
+                    - generic [ref=e216]: PostgresSQL
+                    - generic [ref=e217]: Tailwind
+                    - generic [ref=e218]: Plaid
+            - listitem [ref=e219]:
+              - link "Next Auth v5 - Advanced Guide Next Auth v5 - Advanced Guide Course Next.js React.js Next Auth PostgresSQL Tailwind" [ref=e220] [cursor=pointer]:
+                - /url: /workshops/next-auth-v5-advanced-guide
+                - img "Next Auth v5 - Advanced Guide" [ref=e222]
+                - generic [ref=e223]:
+                  - generic [ref=e224]:
+                    - heading "Next Auth v5 - Advanced Guide" [level=2] [ref=e225]:
+                      - generic [ref=e226]: Next Auth v5 - Advanced Guide
+                    - paragraph [ref=e227]: Course
+                  - generic [ref=e228]:
+                    - generic [ref=e229]: Next.js
+                    - generic [ref=e230]: React.js
+                    - generic [ref=e231]: Next Auth
+                    - generic [ref=e232]: PostgresSQL
+                    - generic [ref=e233]: Tailwind
+            - listitem [ref=e234]:
+              - link "Build a Canva Clone Build a Canva Clone Course Next.js Hono React.js Drizzle Next Auth PostgresSQL Tailwind" [ref=e235] [cursor=pointer]:
+                - /url: /workshops/build-a-canva-clone
+                - img "Build a Canva Clone" [ref=e237]
+                - generic [ref=e238]:
+                  - generic [ref=e239]:
+                    - heading "Build a Canva Clone" [level=2] [ref=e240]:
+                      - generic [ref=e241]: Build a Canva Clone
+                    - paragraph [ref=e242]: Course
+                  - generic [ref=e243]:
+                    - generic [ref=e244]: Next.js
+                    - generic [ref=e245]: Hono
+                    - generic [ref=e246]: React.js
+                    - generic [ref=e247]: Drizzle
+                    - generic [ref=e248]: Next Auth
+                    - generic [ref=e249]: PostgresSQL
+                    - generic [ref=e250]: Tailwind
+            - listitem [ref=e251]:
+              - link "Build and Deploy a SaaS AI Agent Platform Build and Deploy a SaaS AI Agent Platform Course Next.js React.js Drizzle PostgresSQL Tailwind" [ref=e252] [cursor=pointer]:
+                - /url: /workshops/build-and-deploy-a-saas-ai-agent-platform
+                - img "Build and Deploy a SaaS AI Agent Platform" [ref=e254]
+                - generic [ref=e255]:
+                  - generic [ref=e256]:
+                    - heading "Build and Deploy a SaaS AI Agent Platform" [level=2] [ref=e257]:
+                      - generic [ref=e258]: Build and Deploy a SaaS AI Agent Platform
+                    - paragraph [ref=e259]: Course
+                  - generic [ref=e260]:
+                    - generic [ref=e261]: Next.js
+                    - generic [ref=e262]: React.js
+                    - generic [ref=e263]: Drizzle
+                    - generic [ref=e264]: PostgresSQL
+                    - generic [ref=e265]: Tailwind
+    - contentinfo [ref=e266]:
+      - generic [ref=e267]:
+        - generic [ref=e269]:
+          - generic [ref=e270]:
+            - link "Code with Antonio" [ref=e272] [cursor=pointer]:
+              - /url: /
+              - img "Code with Antonio" [ref=e273]
+            - generic [ref=e275]:
+              - generic [ref=e276]: Code with
+              - generic [ref=e277]: Antonio
+          - navigation [ref=e278]:
+            - link "Home" [ref=e279] [cursor=pointer]:
+              - /url: /
+            - link "Browse" [ref=e280] [cursor=pointer]:
+              - /url: /browse
+            - link "Contact" [ref=e281] [cursor=pointer]:
+              - /url: /contact
+        - generic [ref=e283]:
+          - paragraph [ref=e284]: 2026 © codewithantonio.com
+          - generic [ref=e285]:
+            - link "Terms of Service" [ref=e286] [cursor=pointer]:
+              - /url: /privacy
+            - button "Toggle theme" [ref=e287]:
+              - generic [ref=e289]:
+                - img [ref=e290]
+                - img
