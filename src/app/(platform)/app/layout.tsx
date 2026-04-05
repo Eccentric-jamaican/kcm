@@ -138,14 +138,15 @@ function AuthenticatedPlatformLayout({
   const { user } = useUser()
   const { isAuthenticated, isLoading } = useConvexAuth()
   const upsertCurrentUser = useMutation(api.users.upsertCurrentUser)
-  // Only call viewer query when both Clerk and Convex auth are ready
-  // This prevents race conditions where the query fires before the auth token is propagated
-  const viewer = useQuery(api.users.viewer, (isAuthenticated && isClerkLoaded && userId) ? {} : "skip")
   const [syncedUserId, setSyncedUserId] = useState<string | null>(null)
   const [syncError, setSyncError] = useState<string | null>(null)
+  
+  // Only call viewer query AFTER upsertCurrentUser succeeds
+  // This ensures the Convex auth token is fully synced before querying
+  const viewer = useQuery(api.users.viewer, (syncedUserId === userId && userId) ? {} : "skip")
 
   useEffect(() => {
-    if (!isAuthenticated || !userId) {
+    if (!isAuthenticated || !userId || !isClerkLoaded) {
       setSyncedUserId(null)
       setSyncError(null)
       return
@@ -162,7 +163,13 @@ function AuthenticatedPlatformLayout({
     upsertCurrentUser({})
       .then(() => {
         if (!cancelled) {
-          setSyncedUserId(userId)
+          // Add a small delay to ensure the auth token is fully propagated
+          // before firing the viewer query
+          setTimeout(() => {
+            if (!cancelled) {
+              setSyncedUserId(userId)
+            }
+          }, 100)
         }
       })
       .catch((error: unknown) => {
@@ -174,18 +181,19 @@ function AuthenticatedPlatformLayout({
     return () => {
       cancelled = true
     }
-  }, [isAuthenticated, syncedUserId, upsertCurrentUser, userId])
+  }, [isAuthenticated, syncedUserId, upsertCurrentUser, userId, isClerkLoaded])
 
   if (syncError) {
     return <PlatformLoadingShell message={syncError} />
   }
 
-  if (isLoading || !isAuthenticated || syncedUserId !== userId || viewer === undefined || viewer === null) {
+  if (isLoading || !isAuthenticated || syncedUserId !== userId || viewer === undefined) {
     return <PlatformLoadingShell message="Preparing your learning dashboard..." />
   }
 
+  // viewer can be null if user doesn't exist yet, but that's OK after upsert succeeds
   const displayName =
-    viewer.name ??
+    viewer?.name ??
     user?.fullName ??
     user?.primaryEmailAddress?.emailAddress ??
     "Member"
