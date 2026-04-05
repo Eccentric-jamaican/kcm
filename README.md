@@ -14,6 +14,7 @@ This prject is a web application for a Learning Management Platform for a course
 - Convex
 - Vercel
 - Shadcn
+- Mux
 
 ### Goal
 
