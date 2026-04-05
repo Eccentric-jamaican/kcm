@@ -59,7 +59,7 @@ export function MarketingHeader() {
               <Link href="/app">Log in</Link>
             </Button>
             <Button size="sm" className="h-8 bg-bull px-4 text-sm font-medium text-bull-foreground shadow-sm shadow-bull/20 transition-all hover:bg-bull/90 hover:shadow-bull/30">
-              <Link href="https://app.kcmtrades.com">Get Started</Link>
+              <Link href="/find-my-classes?np=t">Get Started</Link>
             </Button>
           </div>
 
@@ -94,7 +94,7 @@ export function MarketingHeader() {
                 <Link href="/app">Log in</Link>
               </Button>
               <Button className="w-full justify-center bg-bull text-bull-foreground">
-                <Link href="https://app.kcmtrades.com">Get Started</Link>
+                <Link href="/find-my-classes?np=t">Get Started</Link>
               </Button>
             </div>
           </div>

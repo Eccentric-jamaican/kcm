@@ -122,7 +122,7 @@ export function HeroSection() {
                 size="lg"
                 className="h-12 bg-bull px-8 text-sm font-semibold text-bull-foreground shadow-lg shadow-bull/25 transition-all hover:bg-bull/90 hover:shadow-bull/40 hover:-translate-y-0.5"
               >
-                <Link href="https://app.kcmtrades.com" className="flex items-center gap-2">
+                <Link href="/find-my-classes?np=t" className="flex items-center gap-2">
                   Start Learning
                   <ArrowRightIcon />
                 </Link>
