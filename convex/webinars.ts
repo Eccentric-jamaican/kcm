@@ -28,6 +28,25 @@ export const listWebinars = query({
     )),
   },
   handler: async (ctx, args) => {
+    // Validate year is an integer in valid range if provided
+    if (args.year !== undefined) {
+      if (!Number.isInteger(args.year) || args.year < 2020 || args.year > 2100) {
+        throw new Error("Year must be an integer between 2020 and 2100");
+      }
+    }
+
+    // Validate month is an integer in valid range if provided
+    if (args.month !== undefined) {
+      if (!Number.isInteger(args.month) || args.month < 1 || args.month > 12) {
+        throw new Error("Month must be an integer between 1 and 12");
+      }
+    }
+
+    // Fail-fast: month cannot be provided without year
+    if (args.month !== undefined && args.year === undefined) {
+      throw new Error("Month filter requires a year to be specified");
+    }
+
     // Build query based on filters
     const category = args.category;
     if (category) {
@@ -109,7 +128,7 @@ export const getAvailableYears = query({
 
     const years = new Set<number>();
     for (const webinar of webinars) {
-      const year = new Date(webinar.date).getFullYear();
+      const year = new Date(webinar.date).getUTCFullYear();
       years.add(year);
     }
 
@@ -132,7 +151,7 @@ export const getAvailableMonthsForYear = query({
 
     const months = new Set<number>();
     for (const webinar of webinars) {
-      const month = new Date(webinar.date).getMonth() + 1; // 1-indexed
+      const month = new Date(webinar.date).getUTCMonth() + 1; // 1-indexed
       months.add(month);
     }
 
