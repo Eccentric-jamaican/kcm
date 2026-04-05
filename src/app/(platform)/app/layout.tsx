@@ -134,11 +134,13 @@ function AuthenticatedPlatformLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const { userId } = useAuth()
+  const { userId, isLoaded: isClerkLoaded } = useAuth()
   const { user } = useUser()
   const { isAuthenticated, isLoading } = useConvexAuth()
   const upsertCurrentUser = useMutation(api.users.upsertCurrentUser)
-  const viewer = useQuery(api.users.viewer, isAuthenticated ? {} : "skip")
+  // Only call viewer query when both Clerk and Convex auth are ready
+  // This prevents race conditions where the query fires before the auth token is propagated
+  const viewer = useQuery(api.users.viewer, (isAuthenticated && isClerkLoaded && userId) ? {} : "skip")
   const [syncedUserId, setSyncedUserId] = useState<string | null>(null)
   const [syncError, setSyncError] = useState<string | null>(null)
 
