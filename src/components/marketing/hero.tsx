@@ -150,7 +150,7 @@ export function HeroSection() {
                     </AvatarFallback>
                   </Avatar>
                 ))}
-                <AvatarGroupCount>+996</AvatarGroupCount>
+                <AvatarGroupCount>+400</AvatarGroupCount>
               </AvatarGroup>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1">
