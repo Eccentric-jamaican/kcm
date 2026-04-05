@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useAuth, SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 
 // Premium inline SVG icons
@@ -28,7 +27,6 @@ const navLinks = [
 
 export function MarketingHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isSignedIn } = useAuth();
 
   return (
     <header className="fixed left-0 right-0 top-0 z-50">
@@ -57,22 +55,12 @@ export function MarketingHeader() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden items-center gap-3 md:flex">
-            {!isSignedIn ? (
-              <>
-                <SignInButton mode="modal">
-                  <Button variant="ghost" size="sm" className="h-8">
-                    Log in
-                  </Button>
-                </SignInButton>
-                <Button size="sm" className="h-8 bg-bull px-4 text-sm font-medium text-bull-foreground shadow-sm shadow-bull/20 transition-all hover:bg-bull/90 hover:shadow-bull/30">
-                  <Link href="https://app.kcmtrades.com">Get Started</Link>
-                </Button>
-              </>
-            ) : (
-              <Button size="sm" className="h-8 bg-bull px-4 text-sm font-medium text-bull-foreground shadow-sm shadow-bull/20 transition-all hover:bg-bull/90 hover:shadow-bull/30">
-                <Link href="https://app.kcmtrades.com">Go to App</Link>
-              </Button>
-            )}
+            <Button variant="ghost" size="sm" className="h-8">
+              <Link href="/app">Log in</Link>
+            </Button>
+            <Button size="sm" className="h-8 bg-bull px-4 text-sm font-medium text-bull-foreground shadow-sm shadow-bull/20 transition-all hover:bg-bull/90 hover:shadow-bull/30">
+              <Link href="https://app.kcmtrades.com">Get Started</Link>
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -102,22 +90,12 @@ export function MarketingHeader() {
               ))}
             </nav>
             <div className="mt-4 flex flex-col gap-2 border-t border-border/50 pt-4">
-              {!isSignedIn ? (
-                <>
-                  <SignInButton mode="modal">
-                    <Button variant="outline" className="w-full justify-center">
-                      Log in
-                    </Button>
-                  </SignInButton>
-                  <Button className="w-full justify-center bg-bull text-bull-foreground">
-                    <Link href="https://app.kcmtrades.com">Get Started</Link>
-                  </Button>
-                </>
-              ) : (
-                <Button className="w-full justify-center bg-bull text-bull-foreground">
-                  <Link href="https://app.kcmtrades.com">Go to App</Link>
-                </Button>
-              )}
+              <Button variant="outline" className="w-full justify-center">
+                <Link href="/app">Log in</Link>
+              </Button>
+              <Button className="w-full justify-center bg-bull text-bull-foreground">
+                <Link href="https://app.kcmtrades.com">Get Started</Link>
+              </Button>
             </div>
           </div>
         )}

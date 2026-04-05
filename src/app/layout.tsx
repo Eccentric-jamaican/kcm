@@ -4,6 +4,10 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
+const clerkEnabled = Boolean(
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY,
+);
+
 const poppins = Poppins({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -31,16 +35,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <ClerkProvider>
-      <html
-        lang="en"
-        className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", poppins.variable)}
-      >
-        <body className="min-h-full flex flex-col">
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+  const content = (
+    <html
+      lang="en"
+      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", poppins.variable)}
+    >
+      <body className="min-h-full flex flex-col">
+        {children}
+      </body>
+    </html>
   );
+
+  if (!clerkEnabled) {
+    return content;
+  }
+
+  return <ClerkProvider>{content}</ClerkProvider>;
 }
