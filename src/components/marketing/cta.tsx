@@ -90,7 +90,7 @@ export function CTASection() {
               size="lg"
               className="h-14 bg-bull px-10 text-base font-semibold text-bull-foreground shadow-lg shadow-bull/30 transition-all hover:bg-bull/90 hover:shadow-bull/50 hover:-translate-y-0.5"
             >
-              <Link href="https://app.kcmtrades.com/signup" className="flex items-center gap-2">
+              <Link href="/find-my-classes?np=t" className="flex items-center gap-2">
                 Get Started Today
                 <ArrowRightIcon />
               </Link>
