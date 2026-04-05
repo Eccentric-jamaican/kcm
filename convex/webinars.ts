@@ -2,17 +2,17 @@ import { v } from "convex/values";
 import { query } from "./_generated/server";
 import { paginationOptsValidator } from "convex/server";
 
-// Helper to get start/end of year/month for range queries
+// Helper to get start/end of year/month for range queries (UTC)
 function getYearRange(year: number): { start: number; end: number } {
-  const start = new Date(year, 0, 1).getTime();
-  const end = new Date(year + 1, 0, 1).getTime();
+  const start = Date.UTC(year, 0, 1);
+  const end = Date.UTC(year + 1, 0, 1);
   return { start, end };
 }
 
 function getMonthRange(year: number, month: number): { start: number; end: number } {
   // month is 1-indexed (1 = January)
-  const start = new Date(year, month - 1, 1).getTime();
-  const end = new Date(year, month, 1).getTime();
+  const start = Date.UTC(year, month - 1, 1);
+  const end = Date.UTC(year, month, 1);
   return { start, end };
 }
 
@@ -32,15 +32,12 @@ export const listWebinars = query({
     const category = args.category;
     if (category) {
       // Category filter with optional date range
-      const baseQuery = ctx.db
-        .query("webinars")
-        .withIndex("by_category_date", (q) => q.eq("category", category));
-
       if (args.year !== undefined && args.month !== undefined) {
         const { start, end } = getMonthRange(args.year, args.month);
-        return await baseQuery
-          .filter((q) =>
-            q.and(q.gte(q.field("date"), start), q.lt(q.field("date"), end))
+        return await ctx.db
+          .query("webinars")
+          .withIndex("by_category_date", (q) =>
+            q.eq("category", category).gte("date", start).lt("date", end)
           )
           .order("desc")
           .paginate(args.paginationOpts);
@@ -48,41 +45,46 @@ export const listWebinars = query({
 
       if (args.year !== undefined) {
         const { start, end } = getYearRange(args.year);
-        return await baseQuery
-          .filter((q) =>
-            q.and(q.gte(q.field("date"), start), q.lt(q.field("date"), end))
+        return await ctx.db
+          .query("webinars")
+          .withIndex("by_category_date", (q) =>
+            q.eq("category", category).gte("date", start).lt("date", end)
           )
           .order("desc")
           .paginate(args.paginationOpts);
       }
 
-      return await baseQuery.order("desc").paginate(args.paginationOpts);
+      return await ctx.db
+        .query("webinars")
+        .withIndex("by_category_date", (q) => q.eq("category", category))
+        .order("desc")
+        .paginate(args.paginationOpts);
     }
 
     // No category filter - use date index
-    const baseQuery = ctx.db.query("webinars").withIndex("by_date");
-
     if (args.year !== undefined && args.month !== undefined) {
       const { start, end } = getMonthRange(args.year, args.month);
-      return await baseQuery
-        .filter((q) =>
-          q.and(q.gte(q.field("date"), start), q.lt(q.field("date"), end))
-        )
+      return await ctx.db
+        .query("webinars")
+        .withIndex("by_date", (q) => q.gte("date", start).lt("date", end))
         .order("desc")
         .paginate(args.paginationOpts);
     }
 
     if (args.year !== undefined) {
       const { start, end } = getYearRange(args.year);
-      return await baseQuery
-        .filter((q) =>
-          q.and(q.gte(q.field("date"), start), q.lt(q.field("date"), end))
-        )
+      return await ctx.db
+        .query("webinars")
+        .withIndex("by_date", (q) => q.gte("date", start).lt("date", end))
         .order("desc")
         .paginate(args.paginationOpts);
     }
 
-    return await baseQuery.order("desc").paginate(args.paginationOpts);
+    return await ctx.db
+      .query("webinars")
+      .withIndex("by_date")
+      .order("desc")
+      .paginate(args.paginationOpts);
   },
 });
 
@@ -103,7 +105,7 @@ export const getAvailableYears = query({
       .query("webinars")
       .withIndex("by_date")
       .order("desc")
-      .take(100);
+      .collect();
 
     const years = new Set<number>();
     for (const webinar of webinars) {
@@ -125,11 +127,8 @@ export const getAvailableMonthsForYear = query({
 
     const webinars = await ctx.db
       .query("webinars")
-      .withIndex("by_date")
-      .filter((q) =>
-        q.and(q.gte(q.field("date"), start), q.lt(q.field("date"), end))
-      )
-      .take(100);
+      .withIndex("by_date", (q) => q.gte("date", start).lt("date", end))
+      .collect();
 
     const months = new Set<number>();
     for (const webinar of webinars) {

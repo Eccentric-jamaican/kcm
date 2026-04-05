@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import * as React from "react"
-import { useQuery } from "convex/react"
+import { usePaginatedQuery, useQuery } from "convex/react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { api } from "../../../../../convex/_generated/api"
 import { Doc, Id } from "../../../../../convex/_generated/dataModel"
@@ -66,21 +66,29 @@ export default function WebinarsPage() {
   const monthParam = searchParams.get("month")
   const categoryParam = searchParams.get("category")
 
-  const year = yearParam ? parseInt(yearParam, 10) : undefined
-  const month = monthParam ? parseInt(monthParam, 10) : undefined
+  // Parse and validate year/month params
+  const parsedYear = yearParam ? parseInt(yearParam, 10) : NaN
+  const parsedMonth = monthParam ? parseInt(monthParam, 10) : NaN
+  
+  const year = Number.isFinite(parsedYear) ? parsedYear : undefined
+  const month = Number.isFinite(parsedMonth) ? parsedMonth : undefined
   const category = categoryParam 
     ? (categoryParam as (typeof categories)[number]) 
     : undefined
 
-  // Fetch webinars with filters
-  const webinarsQuery = useQuery(
+  // Fetch webinars with filters (paginated)
+  const {
+    results: webinars,
+    status,
+    loadMore,
+  } = usePaginatedQuery(
     api.webinars.listWebinars,
     {
-      paginationOpts: { numItems: 50, cursor: null },
       year,
       month,
       category,
-    }
+    },
+    { initialNumItems: 50 }
   )
 
   // Fetch available years for dropdown
@@ -129,8 +137,7 @@ export default function WebinarsPage() {
     router.push(`${pathname}?${params.toString()}`)
   }
 
-  const webinars = webinarsQuery?.page ?? []
-  const isLoading = webinarsQuery === undefined
+  const isLoading = status === "LoadingFirstPage"
 
   // Get months to display (only show if year is selected)
   const monthsToDisplay =

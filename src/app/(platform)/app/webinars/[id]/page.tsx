@@ -42,9 +42,36 @@ function getYouTubeEmbedUrl(url: string): string {
 
 export default function WebinarDetailPage() {
   const params = useParams()
-  const webinarId = params.id as Id<"webinars">
+  
+  // Validate the route param
+  const rawId = params.id
+  const isValidId = typeof rawId === "string" && rawId.length > 0
+  const webinarId = isValidId ? (rawId as Id<"webinars">) : undefined
 
-  const webinar = useQuery(api.webinars.getWebinarById, { id: webinarId })
+  const webinar = useQuery(
+    api.webinars.getWebinarById,
+    webinarId !== undefined ? { id: webinarId } : "skip"
+  )
+
+  // Handle loading state or invalid ID
+  if (!isValidId) {
+    return (
+      <main className="px-4 py-6 sm:px-6">
+        <div className="mx-auto max-w-[1400px]">
+          <div className="rounded-xl border bg-card p-8 text-center text-muted-foreground">
+            <p className="text-lg font-medium">Invalid webinar ID</p>
+            <p className="mt-1">The webinar ID provided is not valid.</p>
+            <Link href="/app/webinars">
+              <Button className="mt-4" variant="outline">
+                <HugeiconsIcon icon={ArrowLeftIcon} className="mr-2 h-4 w-4" />
+                Back to Webinars
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </main>
+    )
+  }
 
   if (webinar === undefined) {
     return (
