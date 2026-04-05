@@ -127,7 +127,7 @@ export default function FindMyClassesPage() {
   const selectedGoalsForActiveInterest = activeInterest ? goalSelections[activeInterest] ?? [] : [];
 
   const recommendedClasses = useMemo(() => {
-    const source = selectedInterests.length > 0 ? selectedInterests : ["career"];
+    const source: InterestId[] = selectedInterests.length > 0 ? selectedInterests : ["career"];
     return source.map((interest) => recommendedByInterest[interest]).slice(0, 3);
   }, [selectedInterests]);
 
