@@ -79,6 +79,12 @@ function PlatformHeader({ displayName }: { displayName: string }) {
 
         <div className="hidden items-center gap-4 sm:gap-5 md:flex">
           <Link
+            href="/app/webinars"
+            className="hidden text-lg font-medium text-foreground/90 transition-colors hover:text-foreground sm:inline-block"
+          >
+            Webinars
+          </Link>
+          <Link
             href="/app/browse"
             className="hidden text-lg font-medium text-foreground/90 transition-colors hover:text-foreground sm:inline-block"
           >
