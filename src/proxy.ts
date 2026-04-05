@@ -36,14 +36,8 @@ function isAuthPath(pathname: string) {
 }
 
 function getCanonicalAuthPath(pathname: string) {
-  if (pathname === "/login") {
-    return "/sign-in";
-  }
-
-  if (pathname === "/signup") {
-    return "/sign-up";
-  }
-
+  if (pathname === "/login") return "/sign-in";
+  if (pathname === "/signup") return "/sign-up";
   return pathname;
 }
 
@@ -51,6 +45,7 @@ function getMarketingOrigin(request: NextRequest) {
   const protocol = getProtocol(request);
   const hostname = getHostname(request);
 
+  // In local dev, marketing and app share the same origin
   if (hostname === "localhost:3000" || hostname === "app.localhost:3000") {
     return `${protocol}://localhost:3000`;
   }
@@ -62,8 +57,9 @@ function getPlatformOrigin(request: NextRequest) {
   const protocol = getProtocol(request);
   const hostname = getHostname(request);
 
+  // In local dev, marketing and app share the same origin
   if (hostname === "localhost:3000" || hostname === "app.localhost:3000") {
-    return `${protocol}://app.localhost:3000`;
+    return `${protocol}://localhost:3000`;
   }
 
   return `${protocol}://app.kcmtrades.com`;
@@ -74,41 +70,24 @@ function buildAbsoluteUrl(origin: string, pathname: string, search: string) {
 }
 
 function buildSignInUrl(request: NextRequest, redirectUrl: string) {
-  const url = new URL("/sign-in", getMarketingOrigin(request));
+  // Always use relative path for sign-in in single-origin setup
+  const url = new URL("/sign-in", request.url);
   url.searchParams.set("redirect_url", redirectUrl);
   return url;
 }
 
 function buildCanonicalAuthUrl(request: NextRequest) {
-  const url = new URL(getCanonicalAuthPath(request.nextUrl.pathname), getMarketingOrigin(request));
+  const url = new URL(getCanonicalAuthPath(request.nextUrl.pathname), request.url);
 
   request.nextUrl.searchParams.forEach((value, key) => {
     url.searchParams.append(key, value);
   });
 
   if (!url.searchParams.has("redirect_url")) {
-    url.searchParams.set("redirect_url", buildAbsoluteUrl(getPlatformOrigin(request), "/", ""));
+    url.searchParams.set("redirect_url", "/app");
   }
 
   return url;
-}
-
-function getClerkOptions(request: NextRequest) {
-  const hostname = getHostname(request);
-
-  if (isAppSubdomain(hostname)) {
-    return {
-      domain: hostname,
-      isSatellite: true,
-      signInUrl: `${getMarketingOrigin(request)}/sign-in`,
-      signUpUrl: `${getMarketingOrigin(request)}/sign-up`,
-    };
-  }
-
-  return {
-    signInUrl: "/sign-in",
-    signUpUrl: "/sign-up",
-  };
 }
 
 function handleRouting(request: NextRequest) {
@@ -116,8 +95,14 @@ function handleRouting(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (isAppSubdomain(hostname)) {
+    // In local dev, don't redirect auth paths - handle them on same origin
     if (isAuthPath(pathname)) {
-      return NextResponse.redirect(buildCanonicalAuthUrl(request));
+      // Only redirect to canonical path if needed
+      const canonicalPath = getCanonicalAuthPath(pathname);
+      if (canonicalPath !== pathname) {
+        return NextResponse.redirect(new URL(canonicalPath, request.url));
+      }
+      return NextResponse.next();
     }
 
     if (pathname === "/") {
@@ -129,24 +114,18 @@ function handleRouting(request: NextRequest) {
     }
   }
 
-  if (isMarketingDomain(hostname) && pathname === "/app") {
-    return NextResponse.redirect(new URL(buildAbsoluteUrl(getPlatformOrigin(request), "/", request.nextUrl.search)));
-  }
-
-  if (isMarketingDomain(hostname) && pathname.startsWith("/app/")) {
-    return NextResponse.redirect(
-      new URL(buildAbsoluteUrl(getPlatformOrigin(request), pathname.slice("/app".length), request.nextUrl.search)),
-    );
-  }
+  // For single-origin setup, /app paths on marketing domain are handled normally
+  // No redirects needed - the route group (platform)/app handles the routing
 }
 
+// NO SATELLITE MODE - single origin setup for local dev
 const clerkProxy = clerkMiddleware(async (auth, request) => {
   const hostname = getHostname(request);
 
   if (isAppSubdomain(hostname) && !isAuthPath(request.nextUrl.pathname)) {
-    const { isAuthenticated } = await auth();
+    const { userId } = await auth();
 
-    if (!isAuthenticated) {
+    if (!userId) {
       return NextResponse.redirect(
         buildSignInUrl(
           request,
@@ -157,13 +136,18 @@ const clerkProxy = clerkMiddleware(async (auth, request) => {
   }
 
   return handleRouting(request);
-}, (request) => getClerkOptions(request));
+});
 
 export default function proxy(request: NextRequest, event: NextFetchEvent) {
   const hostname = getHostname(request);
 
+  // In local dev with single origin, don't redirect auth paths
   if (isAppSubdomain(hostname) && isAuthPath(request.nextUrl.pathname)) {
-    return NextResponse.redirect(buildCanonicalAuthUrl(request));
+    const canonicalPath = getCanonicalAuthPath(request.nextUrl.pathname);
+    if (canonicalPath !== request.nextUrl.pathname) {
+      return NextResponse.redirect(new URL(canonicalPath, request.url));
+    }
+    return NextResponse.next();
   }
 
   if (!clerkEnabled) {

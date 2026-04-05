@@ -36,22 +36,6 @@ function isAppHost(hostname: string) {
   return hostname === "app.kcmtrades.com" || hostname === "app.localhost:3000";
 }
 
-function getMarketingOrigin(hostname: string) {
-  if (hostname === "localhost:3000" || hostname === "app.localhost:3000") {
-    return "http://localhost:3000";
-  }
-
-  return "https://kcmtrades.com";
-}
-
-function getPlatformOrigin(hostname: string) {
-  if (hostname === "localhost:3000" || hostname === "app.localhost:3000") {
-    return "http://app.localhost:3000";
-  }
-
-  return "https://app.kcmtrades.com";
-}
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -60,8 +44,6 @@ export default async function RootLayout({
   const requestHeaders = await headers();
   const hostname = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "";
   const appHost = isAppHost(hostname);
-  const marketingOrigin = getMarketingOrigin(hostname);
-  const platformOrigin = getPlatformOrigin(hostname);
 
   return (
     <html
@@ -71,11 +53,11 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         {clerkEnabled ? (
           <ClerkProvider
-            allowedRedirectOrigins={appHost ? undefined : [platformOrigin]}
-            domain={appHost ? hostname : undefined}
-            isSatellite={appHost}
-            signInUrl={appHost ? `${marketingOrigin}/sign-in` : "/sign-in"}
-            signUpUrl={appHost ? `${marketingOrigin}/sign-up` : "/sign-up"}
+            // NO SATELLITE MODE in local dev - single origin setup
+            // isSatellite and domain only needed for true multi-domain production
+            signInUrl="/sign-in"
+            signUpUrl="/sign-up"
+            allowedRedirectOrigins={appHost ? ["http://localhost:3000", "https://app.kcmtrades.com"] : undefined}
           >
             <ConvexClientProvider>{children}</ConvexClientProvider>
           </ClerkProvider>
