@@ -1,13 +1,21 @@
 "use client"
 
+import { UserButton, useAuth, useUser } from "@clerk/nextjs"
+import { useConvexAuth, useMutation, useQuery } from "convex/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Spinner } from "@/components/ui/spinner"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { SearchIcon } from "@hugeicons/core-free-icons"
+import { api } from "../../../../convex/_generated/api"
 
-function PlatformHeader() {
+const authEnabled = Boolean(
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.NEXT_PUBLIC_CONVEX_URL
+)
+
+function PlatformHeader({ displayName }: { displayName: string }) {
   const pathname = usePathname()
   const isBrowsePage = pathname === "/app/browse"
   const showDesktopSearch = !isBrowsePage
@@ -77,19 +85,10 @@ function PlatformHeader() {
             Feedback
           </Link>
 
-          <button
-            type="button"
-            className="inline-flex items-center gap-2 rounded-full px-1 py-1 transition-colors hover:bg-muted"
-            aria-label="Open account menu"
-          >
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-gradient-to-br from-pink-100 to-purple-100 text-xs">
-                AE
-              </AvatarFallback>
-            </Avatar>
-            <span className="hidden text-sm font-medium sm:inline">Addis</span>
-            <span className="hidden text-xs sm:inline">▾</span>
-          </button>
+          <div className="inline-flex items-center gap-3 rounded-full px-1 py-1">
+            <span className="hidden text-sm font-medium sm:inline">{displayName}</span>
+            <UserButton />
+          </div>
         </div>
 
         <button
@@ -104,15 +103,112 @@ function PlatformHeader() {
   )
 }
 
+function PlatformLoadingShell({ message }: { message: string }) {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[#f2f2f4] px-6">
+      <div className="flex items-center gap-3 rounded-xl border bg-card px-5 py-4 text-sm text-muted-foreground shadow-sm">
+        <Spinner className="size-4" />
+        <span>{message}</span>
+      </div>
+    </div>
+  )
+}
+
+function PlatformShell({
+  children,
+  displayName,
+}: Readonly<{
+  children: React.ReactNode
+  displayName: string
+}>) {
+  return (
+    <div className="min-h-screen bg-[#f2f2f4]">
+      <PlatformHeader displayName={displayName} />
+      <div className="mx-auto w-full max-w-[1400px]">{children}</div>
+    </div>
+  )
+}
+
+function AuthenticatedPlatformLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  const { userId, isLoaded: isClerkLoaded } = useAuth()
+  const { user } = useUser()
+  const { isAuthenticated, isLoading } = useConvexAuth()
+  const upsertCurrentUser = useMutation(api.users.upsertCurrentUser)
+  const [syncedUserId, setSyncedUserId] = useState<string | null>(null)
+  const [syncError, setSyncError] = useState<string | null>(null)
+  
+  // Only call viewer query AFTER upsertCurrentUser succeeds
+  // This ensures the Convex auth token is fully synced before querying
+  const viewer = useQuery(api.users.viewer, (syncedUserId === userId && userId) ? {} : "skip")
+
+  useEffect(() => {
+    if (!isAuthenticated || !userId || !isClerkLoaded) {
+      setSyncedUserId(null)
+      setSyncError(null)
+      return
+    }
+
+    if (syncedUserId === userId) {
+      return
+    }
+
+    let cancelled = false
+
+    setSyncError(null)
+
+    upsertCurrentUser({})
+      .then(() => {
+        if (!cancelled) {
+          // Add a small delay to ensure the auth token is fully propagated
+          // before firing the viewer query
+          setTimeout(() => {
+            if (!cancelled) {
+              setSyncedUserId(userId)
+            }
+          }, 100)
+        }
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setSyncError(error instanceof Error ? error.message : "Unable to sync your account.")
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [isAuthenticated, syncedUserId, upsertCurrentUser, userId, isClerkLoaded])
+
+  if (syncError) {
+    return <PlatformLoadingShell message={syncError} />
+  }
+
+  if (isLoading || !isAuthenticated || syncedUserId !== userId || viewer === undefined) {
+    return <PlatformLoadingShell message="Preparing your learning dashboard..." />
+  }
+
+  // viewer can be null if user doesn't exist yet, but that's OK after upsert succeeds
+  const displayName =
+    viewer?.name ??
+    user?.fullName ??
+    user?.primaryEmailAddress?.emailAddress ??
+    "Member"
+
+  return <PlatformShell displayName={displayName}>{children}</PlatformShell>
+}
+
 export default function PlatformLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  return (
-    <div className="min-h-screen bg-[#f2f2f4]">
-      <PlatformHeader />
-      <div className="mx-auto w-full max-w-[1400px]">{children}</div>
-    </div>
-  )
+  if (!authEnabled) {
+    return <PlatformShell displayName="Guest">{children}</PlatformShell>
+  }
+
+  return <AuthenticatedPlatformLayout>{children}</AuthenticatedPlatformLayout>
 }

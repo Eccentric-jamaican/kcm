@@ -133,12 +133,13 @@ export default function FindMyClassesPage() {
 
   const signupUrl = useMemo(() => {
     const params = new URLSearchParams();
+    params.set("redirect_url", "/app");
     params.set("source", "onboarding");
     params.set("interests", selectedInterests.join(","));
 
     const flattenedGoals = selectedInterests.flatMap((interest) => goalSelections[interest] ?? []);
     params.set("goals", flattenedGoals.join("|"));
-    return `https://app.kcmtrades.com/signup?${params.toString()}`;
+    return `/sign-up?${params.toString()}`;
   }, [selectedInterests, goalSelections]);
 
   const canContinue =
