@@ -56,7 +56,7 @@ export function MarketingHeader() {
           {/* Desktop Auth Buttons */}
           <div className="hidden items-center gap-3 md:flex">
             <Button variant="ghost" size="sm" className="h-8">
-              <Link href="/app">Log in</Link>
+              <Link href="/sign-in?redirect_url=/app">Log in</Link>
             </Button>
             <Button size="sm" className="h-8 bg-bull px-4 text-sm font-medium text-bull-foreground shadow-sm shadow-bull/20 transition-all hover:bg-bull/90 hover:shadow-bull/30">
               <Link href="/find-my-classes?np=t">Get Started</Link>
@@ -91,7 +91,7 @@ export function MarketingHeader() {
             </nav>
             <div className="mt-4 flex flex-col gap-2 border-t border-border/50 pt-4">
               <Button variant="outline" className="w-full justify-center">
-                <Link href="/app">Log in</Link>
+                <Link href="/sign-in?redirect_url=/app">Log in</Link>
               </Button>
               <Button className="w-full justify-center bg-bull text-bull-foreground">
                 <Link href="/find-my-classes?np=t">Get Started</Link>
