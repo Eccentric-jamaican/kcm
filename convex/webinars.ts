@@ -142,6 +142,11 @@ export const getAvailableMonthsForYear = query({
     year: v.number(),
   },
   handler: async (ctx, args) => {
+    // Validate year is an integer in valid range (same as listWebinars)
+    if (!Number.isInteger(args.year) || args.year < 2020 || args.year > 2100) {
+      throw new Error("Year must be an integer between 2020 and 2100");
+    }
+
     const { start, end } = getYearRange(args.year);
 
     const webinars = await ctx.db
