@@ -15,7 +15,13 @@ const authEnabled = Boolean(
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.NEXT_PUBLIC_CONVEX_URL
 )
 
-function PlatformHeader({ displayName }: { displayName: string }) {
+function PlatformHeader({
+  displayName,
+  canAccessAdmin,
+}: {
+  displayName: string
+  canAccessAdmin: boolean
+}) {
   const pathname = usePathname()
   const isBrowsePage = pathname === "/app/browse"
   const showDesktopSearch = !isBrowsePage
@@ -90,6 +96,14 @@ function PlatformHeader({ displayName }: { displayName: string }) {
           >
             Feedback
           </Link>
+          {canAccessAdmin ? (
+            <Link
+              href="/app/admin"
+              className="hidden text-lg font-medium text-foreground/90 transition-colors hover:text-foreground sm:inline-block"
+            >
+              Admin
+            </Link>
+          ) : null}
 
           <div className="inline-flex items-center gap-3 rounded-full px-1 py-1">
             <span className="hidden text-sm font-medium sm:inline">{displayName}</span>
@@ -123,13 +137,15 @@ function PlatformLoadingShell({ message }: { message: string }) {
 function PlatformShell({
   children,
   displayName,
+  canAccessAdmin,
 }: Readonly<{
   children: React.ReactNode
   displayName: string
+  canAccessAdmin: boolean
 }>) {
   return (
     <div className="min-h-screen bg-[#f2f2f4]">
-      <PlatformHeader displayName={displayName} />
+      <PlatformHeader displayName={displayName} canAccessAdmin={canAccessAdmin} />
       <div className="mx-auto w-full max-w-[1400px]">{children}</div>
     </div>
   )
@@ -152,23 +168,16 @@ function AuthenticatedPlatformLayout({
   const viewer = useQuery(api.users.viewer, (syncedUserId === userId && userId) ? {} : "skip")
 
   useEffect(() => {
-    if (!isAuthenticated || !userId || !isClerkLoaded) {
-      setSyncedUserId(null)
-      setSyncError(null)
-      return
-    }
-
-    if (syncedUserId === userId) {
+    if (!isAuthenticated || !userId || !isClerkLoaded || syncedUserId === userId) {
       return
     }
 
     let cancelled = false
 
-    setSyncError(null)
-
     upsertCurrentUser({})
       .then(() => {
         if (!cancelled) {
+          setSyncError(null)
           // Add a small delay to ensure the auth token is fully propagated
           // before firing the viewer query
           setTimeout(() => {
@@ -189,8 +198,21 @@ function AuthenticatedPlatformLayout({
     }
   }, [isAuthenticated, syncedUserId, upsertCurrentUser, userId, isClerkLoaded])
 
+  if (isClerkLoaded && !userId) {
+    return <PlatformShell displayName="Guest" canAccessAdmin={false}>{children}</PlatformShell>
+  }
+
+  const fallbackDisplayName =
+    user?.fullName ??
+    user?.primaryEmailAddress?.emailAddress ??
+    "Member"
+
+  if (isClerkLoaded && userId && !isLoading && !isAuthenticated) {
+    return <PlatformShell displayName={fallbackDisplayName} canAccessAdmin={false}>{children}</PlatformShell>
+  }
+
   if (syncError) {
-    return <PlatformLoadingShell message={syncError} />
+    return <PlatformShell displayName={fallbackDisplayName} canAccessAdmin={false}>{children}</PlatformShell>
   }
 
   if (isLoading || !isAuthenticated || syncedUserId !== userId || viewer === undefined) {
@@ -200,11 +222,9 @@ function AuthenticatedPlatformLayout({
   // viewer can be null if user doesn't exist yet, but that's OK after upsert succeeds
   const displayName =
     viewer?.name ??
-    user?.fullName ??
-    user?.primaryEmailAddress?.emailAddress ??
-    "Member"
+    fallbackDisplayName
 
-  return <PlatformShell displayName={displayName}>{children}</PlatformShell>
+  return <PlatformShell displayName={displayName} canAccessAdmin={Boolean(viewer?.isMaintainer)}>{children}</PlatformShell>
 }
 
 export default function PlatformLayout({
@@ -213,7 +233,7 @@ export default function PlatformLayout({
   children: React.ReactNode
 }>) {
   if (!authEnabled) {
-    return <PlatformShell displayName="Guest">{children}</PlatformShell>
+    return <PlatformShell displayName="Guest" canAccessAdmin={false}>{children}</PlatformShell>
   }
 
   return <AuthenticatedPlatformLayout>{children}</AuthenticatedPlatformLayout>

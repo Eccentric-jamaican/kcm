@@ -8,6 +8,14 @@
  * @module
  */
 
+import type * as admin from "../admin.js";
+import type * as adminMux from "../adminMux.js";
+import type * as courses from "../courses.js";
+import type * as http from "../http.js";
+import type * as httpHelpers from "../httpHelpers.js";
+import type * as lib_auth from "../lib/auth.js";
+import type * as lib_courseSeedData from "../lib/courseSeedData.js";
+import type * as progress from "../progress.js";
 import type * as seed from "../seed.js";
 import type * as users from "../users.js";
 import type * as webinars from "../webinars.js";
@@ -19,6 +27,14 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  admin: typeof admin;
+  adminMux: typeof adminMux;
+  courses: typeof courses;
+  http: typeof http;
+  httpHelpers: typeof httpHelpers;
+  "lib/auth": typeof lib_auth;
+  "lib/courseSeedData": typeof lib_courseSeedData;
+  progress: typeof progress;
   seed: typeof seed;
   users: typeof users;
   webinars: typeof webinars;
