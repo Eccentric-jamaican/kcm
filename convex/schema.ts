@@ -30,6 +30,11 @@ export const muxStatusValidator = v.union(
   v.literal("errored"),
 );
 
+export const muxPlaybackPolicyValidator = v.union(
+  v.literal("public"),
+  v.literal("signed"),
+);
+
 export const transcriptStatusValidator = v.union(
   v.literal("none"),
   v.literal("processing"),
@@ -131,6 +136,7 @@ export default defineSchema({
     muxUploadId: v.union(v.string(), v.null()),
     muxAssetId: v.union(v.string(), v.null()),
     muxPlaybackId: v.union(v.string(), v.null()),
+    muxPlaybackPolicy: v.optional(muxPlaybackPolicyValidator),
     muxStatus: muxStatusValidator,
     durationSeconds: v.union(v.number(), v.null()),
     transcriptStatus: transcriptStatusValidator,

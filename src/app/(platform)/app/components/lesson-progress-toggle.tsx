@@ -3,8 +3,8 @@
 import { startTransition, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useMutation } from "convex/react"
-import { Button } from "@/components/ui/button"
 import { api } from "@/lib/convex-api"
+import { Switch } from "@/components/ui/switch"
 
 export function LessonProgressToggle({
   courseId,
@@ -31,8 +31,14 @@ export function LessonProgressToggle({
   }
 
   return (
-    <Button variant={completed ? "outline" : "default"} className="rounded-full" disabled={pending} onClick={handleToggle}>
-      {pending ? "Saving..." : completed ? "Completed" : "Mark Complete"}
-    </Button>
+    <button
+      type="button"
+      className="inline-flex items-center gap-2 text-sm font-medium"
+      disabled={pending}
+      onClick={handleToggle}
+    >
+      <Switch checked={completed} />
+      <span>{pending ? "Saving..." : "Complete"}</span>
+    </button>
   )
 }

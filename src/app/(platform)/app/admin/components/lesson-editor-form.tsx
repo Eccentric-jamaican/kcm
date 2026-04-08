@@ -26,6 +26,7 @@ type LessonRecord = {
   tags: string[]
   muxStatus: string
   muxPlaybackId: string | null
+  muxPlaybackPolicy?: "public" | "signed"
 }
 
 type ChapterOption = {
@@ -221,8 +222,14 @@ export function LessonEditorForm({
         {/* Video */}
         <div className="p-5">
           <h2 className="text-sm font-semibold">Video Delivery</h2>
-          <p className="mt-1 text-xs text-muted-foreground">Status: {lesson.muxStatus}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Status: {lesson.muxStatus}
+            {lesson.muxPlaybackPolicy ? ` • ${lesson.muxPlaybackPolicy} playback` : ""}
+          </p>
           {lesson.muxPlaybackId ? <p className="text-[10px] text-muted-foreground">ID: {lesson.muxPlaybackId}</p> : null}
+          <p className="mt-2 text-xs text-muted-foreground">
+            Uploads are private by default. Learners need course enrollment before KCM mints a Mux playback token.
+          </p>
           <div className="mt-3 grid gap-2">
             <Input type="file" accept="video/*" className="text-xs" onChange={(e) => handleMuxUpload(e.target.files?.[0] ?? null)} />
             <Button variant="outline" size="sm" className="h-7 rounded-lg text-xs" onClick={handleRefreshMux}>Refresh Mux</Button>

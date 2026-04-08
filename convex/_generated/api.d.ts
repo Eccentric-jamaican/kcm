@@ -18,6 +18,7 @@ import type * as lib_courseSeedData from "../lib/courseSeedData.js";
 import type * as progress from "../progress.js";
 import type * as seed from "../seed.js";
 import type * as users from "../users.js";
+import type * as videoPlayback from "../videoPlayback.js";
 import type * as webinars from "../webinars.js";
 
 import type {
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   progress: typeof progress;
   seed: typeof seed;
   users: typeof users;
+  videoPlayback: typeof videoPlayback;
   webinars: typeof webinars;
 }>;
 

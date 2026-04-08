@@ -6,10 +6,10 @@ export default function ForbiddenPage() {
       <div className="mx-auto max-w-3xl rounded-[2rem] border bg-background p-8 shadow-sm sm:p-10">
         <p className="text-xs font-semibold tracking-[0.24em] text-muted-foreground">403 FORBIDDEN</p>
         <h1 className="mt-4 max-w-2xl text-4xl font-semibold tracking-tight sm:text-5xl">
-          This admin area is reserved for course maintainers.
+          This area is not available to your account.
         </h1>
         <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">
-          Your account can still use the learning platform, but it does not currently have maintainer or admin access.
+          Your account is signed in, but it does not currently have permission to open this admin workspace or paid course content.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link

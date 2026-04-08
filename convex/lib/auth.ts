@@ -108,3 +108,29 @@ export async function assertCanManageCourse(ctx: DataCtx, courseId: Id<"courses"
 
   return { viewer, course };
 }
+
+export async function requireCoursePlaybackAccess(ctx: DataCtx, courseId: Id<"courses">) {
+  const viewer = await requireViewer(ctx);
+  const course = await ctx.db.get(courseId);
+
+  if (!course) {
+    throw new Error("Course not found");
+  }
+
+  if (viewer.isAdmin || course.maintainerUserId === viewer.user._id) {
+    return { viewer, course };
+  }
+
+  // Keep enrollment checks in one place so payment-backed entitlements
+  // can later feed or replace courseAccess without touching playback callers.
+  const access = await ctx.db
+    .query("courseAccess")
+    .withIndex("by_userId_and_courseId", (q) => q.eq("userId", viewer.user._id).eq("courseId", courseId))
+    .unique();
+
+  if (!access || !["owner", "staff", "student"].includes(access.accessType)) {
+    throw new Error("Forbidden");
+  }
+
+  return { viewer, course };
+}

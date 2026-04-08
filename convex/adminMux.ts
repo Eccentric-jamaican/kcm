@@ -54,7 +54,7 @@ export const createMuxDirectUpload = action({
       body: JSON.stringify({
         cors_origin: args.corsOrigin,
         new_asset_settings: {
-          playback_policy: ["public"],
+          playback_policy: ["signed"],
         },
       }),
     });
@@ -71,6 +71,7 @@ export const createMuxDirectUpload = action({
     await ctx.runMutation(api.admin.attachMuxUploadToLesson, {
       lessonId: args.lessonId,
       muxUploadId: payload.data.id,
+      playbackPolicy: "signed",
       status: "uploading",
     });
 

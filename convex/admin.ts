@@ -7,6 +7,7 @@ import {
   courseStatusValidator,
   courseVisibilityValidator,
   lessonStateValidator,
+  muxPlaybackPolicyValidator,
   muxStatusValidator,
   resourceTypeValidator,
   transcriptStatusValidator,
@@ -536,6 +537,7 @@ export const createLesson = mutation({
       muxUploadId: null,
       muxAssetId: null,
       muxPlaybackId: null,
+      muxPlaybackPolicy: undefined,
       muxStatus: "idle",
       durationSeconds: null,
       transcriptStatus: "none",
@@ -755,6 +757,7 @@ export const attachMuxUploadToLesson = mutation({
     muxUploadId: v.string(),
     assetId: v.optional(v.string()),
     playbackId: v.optional(v.string()),
+    playbackPolicy: v.optional(muxPlaybackPolicyValidator),
     status: muxStatusValidator,
   },
   handler: async (ctx, args) => {
@@ -768,6 +771,7 @@ export const attachMuxUploadToLesson = mutation({
       muxUploadId: args.muxUploadId,
       muxAssetId: args.assetId ?? lesson.muxAssetId,
       muxPlaybackId: args.playbackId ?? lesson.muxPlaybackId,
+      muxPlaybackPolicy: args.playbackPolicy ?? lesson.muxPlaybackPolicy,
       muxStatus: args.status,
     });
 
