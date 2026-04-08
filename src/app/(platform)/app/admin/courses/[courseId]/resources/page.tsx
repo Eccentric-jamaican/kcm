@@ -20,7 +20,8 @@ export default async function AdminResourcesPage({
     notFound()
   }
 
-  const selectedLessonId = lessonId ?? courseData.chapters.flatMap((chapter) => chapter.lessons)[0]?._id
+  const allLessons = courseData.chapters.flatMap((chapter) => chapter.lessons)
+  const selectedLessonId = lessonId ?? allLessons[0]?._id
   if (!selectedLessonId) {
     notFound()
   }
@@ -31,25 +32,26 @@ export default async function AdminResourcesPage({
   }
 
   return (
-    <main className="px-4 py-6 sm:px-6">
-      <div className="mx-auto max-w-[1400px] space-y-6">
+    <main className="px-4 py-5 sm:px-6">
+      <div className="mx-auto max-w-[1400px] space-y-5">
         <section>
-          <p className="text-xs font-semibold tracking-[0.24em] text-muted-foreground">RESOURCE MANAGER</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight">{courseData.course.title}</h1>
-          <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-            Attach downloadable files, checklists, and reference links to each lesson without leaving the course admin.
-          </p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Resources</p>
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight">{courseData.course.title}</h1>
         </section>
 
-        <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-          <aside className="rounded-[1.75rem] border bg-card p-4 shadow-sm">
-            <div className="space-y-2">
-              {courseData.chapters.flatMap((chapter) => chapter.lessons).map((lesson) => (
+        <div className="grid gap-5 lg:grid-cols-[240px_1fr]">
+          {/* Lesson selector — clean list */}
+          <aside className="lg:self-start lg:sticky lg:top-4">
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">Lessons</p>
+            <div className="space-y-0.5">
+              {allLessons.map((lesson) => (
                 <a
                   key={lesson._id}
                   href={`/app/admin/courses/${courseId}/resources?lessonId=${lesson._id}`}
-                  className={`block rounded-[1rem] px-3 py-3 text-sm transition-colors ${
-                    lesson._id === selectedLessonId ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                  className={`block truncate rounded-lg px-3 py-2 text-sm transition-colors ${
+                    lesson._id === selectedLessonId
+                      ? "bg-primary font-medium text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                 >
                   {lesson.title}
@@ -57,6 +59,7 @@ export default async function AdminResourcesPage({
               ))}
             </div>
           </aside>
+
           <ResourceManager
             lesson={{
               _id: lessonData.lesson._id,

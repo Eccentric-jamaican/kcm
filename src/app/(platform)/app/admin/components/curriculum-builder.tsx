@@ -4,7 +4,7 @@ import { startTransition, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useMutation } from "convex/react"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { api } from "@/lib/convex-api"
 import { cn } from "@/lib/utils"
@@ -20,6 +20,14 @@ type Chapter = {
     slug: string
     muxStatus: string
   }>
+}
+
+const muxDot: Record<string, string> = {
+  ready: "bg-bull",
+  processing: "bg-blue-400",
+  uploading: "bg-blue-400",
+  errored: "bg-bear",
+  idle: "bg-muted-foreground/30",
 }
 
 export function CurriculumBuilder({
@@ -59,79 +67,82 @@ export function CurriculumBuilder({
   async function moveChapter(index: number, direction: -1 | 1) {
     const nextIndex = index + direction
     if (nextIndex < 0 || nextIndex >= chapters.length) return
-    const ids = [...chapters.map((chapter) => chapter._id)]
+    const ids = [...chapters.map((c) => c._id)]
     ;[ids[index], ids[nextIndex]] = [ids[nextIndex], ids[index]]
     await reorderChapters({ courseId: courseId as never, chapterIds: ids as never })
     startTransition(() => router.refresh())
   }
 
   async function moveLesson(lessonId: string, direction: -1 | 1) {
-    const ids = chapters.flatMap((chapter) => chapter.lessons.map((lesson) => lesson._id))
-    const currentIndex = ids.findIndex((id) => id === lessonId)
-    const nextIndex = currentIndex + direction
-    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= ids.length) return
-    ;[ids[currentIndex], ids[nextIndex]] = [ids[nextIndex], ids[currentIndex]]
+    const ids = chapters.flatMap((c) => c.lessons.map((l) => l._id))
+    const i = ids.findIndex((id) => id === lessonId)
+    const j = i + direction
+    if (i < 0 || j < 0 || j >= ids.length) return
+    ;[ids[i], ids[j]] = [ids[j], ids[i]]
     await reorderLessons({ courseId: courseId as never, lessonIds: ids as never })
     startTransition(() => router.refresh())
   }
 
   return (
-    <div className="space-y-6">
-      <section className="rounded-[1.75rem] border bg-card p-6 shadow-sm">
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Input value={chapterTitle} onChange={(event) => setChapterTitle(event.target.value)} placeholder="Create a chapter" />
-          <Button onClick={handleCreateChapter} className="rounded-full">Add Chapter</Button>
-        </div>
-        {message ? <p className="mt-3 text-sm text-muted-foreground">{message}</p> : null}
-      </section>
+    <div className="space-y-5">
+      {/* Add chapter — compact inline */}
+      <div className="flex items-center gap-2">
+        <Input
+          value={chapterTitle}
+          onChange={(e) => setChapterTitle(e.target.value)}
+          placeholder="New chapter name…"
+          className="h-8 max-w-xs text-sm"
+          onKeyDown={(e) => e.key === "Enter" && handleCreateChapter()}
+        />
+        <Button onClick={handleCreateChapter} size="sm" variant="outline" className="h-8 rounded-lg text-xs">Add Chapter</Button>
+        {message ? <p className="text-xs text-muted-foreground">{message}</p> : null}
+      </div>
 
+      {/* Chapters */}
       <div className="space-y-4">
-        {chapters.map((chapter, index) => (
-          <section key={chapter._id} className="rounded-[1.75rem] border bg-card p-5 shadow-sm">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-2xl font-semibold tracking-tight">{chapter.isDefault ? "Default Chapter" : chapter.title}</h2>
-                  {chapter.isDefault ? <span className="rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">Flat course layer</span> : null}
-                </div>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {chapter.description || (chapter.isDefault ? "This hidden chapter lets learner pages render a clean Antonio-style lesson list." : "No chapter description yet.")}
-                </p>
+        {chapters.map((chapter, idx) => (
+          <section key={chapter._id}>
+            {/* Chapter header */}
+            <div className="flex items-center justify-between gap-3 pb-2">
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-semibold">{chapter.isDefault ? "Default Chapter" : chapter.title}</h2>
+                {chapter.isDefault ? (
+                  <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">flat layer</span>
+                ) : null}
               </div>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="outline" className="rounded-full" onClick={() => moveChapter(index, -1)}>Move Up</Button>
-                <Button variant="outline" className="rounded-full" onClick={() => moveChapter(index, 1)}>Move Down</Button>
-                <Button className="rounded-full" onClick={() => handleCreateLesson(chapter._id)}>Add Lesson</Button>
+              <div className="flex items-center gap-1">
+                <button type="button" onClick={() => moveChapter(idx, -1)} className="flex h-6 w-6 items-center justify-center rounded text-xs text-muted-foreground transition-colors hover:bg-muted" aria-label="Move up">↑</button>
+                <button type="button" onClick={() => moveChapter(idx, 1)} className="flex h-6 w-6 items-center justify-center rounded text-xs text-muted-foreground transition-colors hover:bg-muted" aria-label="Move down">↓</button>
+                <Button size="sm" variant="ghost" className="h-6 rounded px-2 text-xs" onClick={() => handleCreateLesson(chapter._id)}>+ Lesson</Button>
               </div>
             </div>
 
-            <div className="mt-5 space-y-3">
-              {chapter.lessons.length === 0 ? (
-                <div className="rounded-[1.25rem] border border-dashed bg-muted/30 p-5 text-sm text-muted-foreground">
-                  No lessons in this chapter yet.
-                </div>
-              ) : (
-                chapter.lessons.map((lesson, lessonIndex) => (
-                  <div key={lesson._id} className="flex flex-col gap-3 rounded-[1.25rem] border p-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-xs font-semibold tracking-[0.2em] text-muted-foreground">LESSON {lessonIndex + 1}</p>
-                      <p className="mt-1 text-lg font-semibold">{lesson.title}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">Mux status: {lesson.muxStatus}</p>
+            {/* Lessons — horizontal scroll strip */}
+            {chapter.lessons.length === 0 ? (
+              <p className="py-3 text-xs text-muted-foreground">No lessons yet.</p>
+            ) : (
+              <div className="flex snap-x gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {chapter.lessons.map((lesson, li) => (
+                  <div
+                    key={lesson._id}
+                    className="group flex w-[260px] shrink-0 snap-start items-center justify-between rounded-xl border bg-card px-3.5 py-2.5 transition-colors hover:bg-muted/30"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", muxDot[lesson.muxStatus] ?? muxDot.idle)} />
+                        <p className="truncate text-sm font-medium">{lesson.title}</p>
+                      </div>
+                      <p className="mt-0.5 pl-3.5 text-[11px] text-muted-foreground">{lesson.muxStatus}</p>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Button variant="outline" className="rounded-full" onClick={() => moveLesson(lesson._id, -1)}>Up</Button>
-                      <Button variant="outline" className="rounded-full" onClick={() => moveLesson(lesson._id, 1)}>Down</Button>
-                      <Link href={`/app/admin/courses/${courseId}/resources?lessonId=${lesson._id}`} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "rounded-full")}>
-                        Resources
-                      </Link>
-                      <Link href={`/app/admin/courses/${courseId}/lessons/${lesson._id}`} className={cn(buttonVariants({ size: "lg" }), "rounded-full")}>
-                        Edit Lesson
-                      </Link>
+                    <div className="ml-2 flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                      <button type="button" onClick={() => moveLesson(lesson._id, -1)} className="flex h-5 w-5 items-center justify-center rounded text-[10px] text-muted-foreground hover:bg-muted" aria-label="Move left">←</button>
+                      <button type="button" onClick={() => moveLesson(lesson._id, 1)} className="flex h-5 w-5 items-center justify-center rounded text-[10px] text-muted-foreground hover:bg-muted" aria-label="Move right">→</button>
+                      <Link href={`/app/admin/courses/${courseId}/lessons/${lesson._id}`} className="flex h-5 items-center rounded px-1.5 text-[10px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground">Edit</Link>
                     </div>
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </section>
         ))}
       </div>

@@ -80,13 +80,13 @@ export function LessonEditorForm({
         thumbnailTime: form.thumbnailTime ? Number(form.thumbnailTime) : null,
         isOptional: form.isOptional,
         prompt: form.prompt.trim() || null,
-        tags: form.tags.split(",").map((value) => value.trim()).filter(Boolean),
+        tags: form.tags.split(",").map((v) => v.trim()).filter(Boolean),
         chapterId: form.chapterId as never,
       })
-      setMessage("Lesson saved.")
+      setMessage("Saved.")
       startTransition(() => router.refresh())
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to save lesson.")
+      setMessage(error instanceof Error ? error.message : "Unable to save.")
     } finally {
       setSaving(false)
     }
@@ -94,7 +94,7 @@ export function LessonEditorForm({
 
   async function handleMuxUpload(file: File | null) {
     if (!file) return
-    setMessage("Creating Mux upload...")
+    setMessage("Creating Mux upload…")
     try {
       const { uploadUrl } = await createMuxDirectUpload({
         lessonId: lesson._id as never,
@@ -102,85 +102,112 @@ export function LessonEditorForm({
       })
       await fetch(uploadUrl, {
         method: "PUT",
-        headers: {
-          "Content-Type": file.type || "video/mp4",
-        },
+        headers: { "Content-Type": file.type || "video/mp4" },
         body: file,
       })
-      setMessage("Video uploaded. Mux is now processing it.")
+      setMessage("Uploaded. Mux is processing.")
       startTransition(() => router.refresh())
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Mux upload failed.")
+      setMessage(error instanceof Error ? error.message : "Upload failed.")
     }
   }
 
   async function handleRefreshMux() {
     try {
       await refreshMuxAsset({ lessonId: lesson._id as never })
-      setMessage("Mux status refreshed.")
+      setMessage("Mux refreshed.")
       startTransition(() => router.refresh())
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to refresh Mux status.")
+      setMessage(error instanceof Error ? error.message : "Refresh failed.")
     }
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-      <section className="space-y-6">
-        <div className="rounded-[1.75rem] border bg-card p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold tracking-tight">Lesson Details</h2>
-          <div className="mt-5 grid gap-4">
-            <div className="space-y-2">
-              <Label>Title</Label>
-              <Input value={form.title} onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))} />
+    <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+      {/* Main form */}
+      <div className="space-y-0 divide-y rounded-xl border bg-card">
+        {/* Details */}
+        <div className="p-5">
+          <h2 className="text-sm font-semibold">Lesson Details</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Title</Label>
+              <Input value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} />
             </div>
-            <div className="space-y-2">
-              <Label>Slug</Label>
-              <Input value={form.slug} onChange={(event) => setForm((current) => ({ ...current, slug: event.target.value }))} />
+            <div className="space-y-1.5">
+              <Label className="text-xs">Slug</Label>
+              <Input value={form.slug} onChange={(e) => setForm((c) => ({ ...c, slug: e.target.value }))} />
             </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea value={form.description} className="min-h-28" onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} />
-            </div>
-            <div className="space-y-2">
-              <Label>Transcript / Body</Label>
-              <Textarea value={form.body} className="min-h-72" onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))} />
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label className="text-xs">Description</Label>
+              <Textarea value={form.description} className="min-h-20" onChange={(e) => setForm((c) => ({ ...c, description: e.target.value }))} />
             </div>
           </div>
         </div>
-      </section>
 
-      <aside className="space-y-6">
-        <div className="rounded-[1.75rem] border bg-card p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold tracking-tight">Publishing</h2>
-          <div className="mt-5 grid gap-4">
-            <div className="space-y-2">
-              <Label>Chapter</Label>
-              <Select value={form.chapterId} onValueChange={(value) => setForm((current) => ({ ...current, chapterId: value ?? current.chapterId }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+        {/* Body */}
+        <div className="p-5">
+          <h2 className="text-sm font-semibold">Transcript / Body</h2>
+          <div className="mt-4">
+            <Textarea value={form.body} className="min-h-48" onChange={(e) => setForm((c) => ({ ...c, body: e.target.value }))} />
+          </div>
+        </div>
+
+        {/* Extras */}
+        <div className="p-5">
+          <h2 className="text-sm font-semibold">Extras</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Source Code URL</Label>
+              <Input value={form.githubUrl} onChange={(e) => setForm((c) => ({ ...c, githubUrl: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Thumbnail Time (s)</Label>
+              <Input type="number" min="0" value={form.thumbnailTime} onChange={(e) => setForm((c) => ({ ...c, thumbnailTime: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label className="text-xs">Prompt / Notes</Label>
+              <Textarea value={form.prompt} className="min-h-16" onChange={(e) => setForm((c) => ({ ...c, prompt: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label className="text-xs">Tags</Label>
+              <Input value={form.tags} onChange={(e) => setForm((c) => ({ ...c, tags: e.target.value }))} placeholder="video, recap, setup" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sidebar — publishing, video, save */}
+      <div className="space-y-0 divide-y rounded-xl border bg-card lg:self-start lg:sticky lg:top-4">
+        {/* Publishing */}
+        <div className="p-5">
+          <h2 className="text-sm font-semibold">Publishing</h2>
+          <div className="mt-4 grid gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Chapter</Label>
+              <Select value={form.chapterId} onValueChange={(v) => setForm((c) => ({ ...c, chapterId: v ?? c.chapterId }))}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {chapters.map((chapter) => (
-                    <SelectItem key={chapter._id} value={chapter._id}>
-                      {chapter.isDefault ? "Default Chapter" : chapter.title}
-                    </SelectItem>
+                  {chapters.map((ch) => (
+                    <SelectItem key={ch._id} value={ch._id}>{ch.isDefault ? "Default Chapter" : ch.title}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select value={form.state} onValueChange={(value) => setForm((current) => ({ ...current, state: value as typeof current.state }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Status</Label>
+              <Select value={form.state} onValueChange={(v) => setForm((c) => ({ ...c, state: v as typeof c.state }))}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="draft">Draft</SelectItem>
                   <SelectItem value="published">Published</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>Visibility</Label>
-              <Select value={form.visibility} onValueChange={(value) => setForm((current) => ({ ...current, visibility: value as typeof current.visibility }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Visibility</Label>
+              <Select value={form.visibility} onValueChange={(v) => setForm((c) => ({ ...c, visibility: v as typeof c.visibility }))}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="private">Private</SelectItem>
                   <SelectItem value="public">Public</SelectItem>
@@ -188,55 +215,36 @@ export function LessonEditorForm({
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>Source Code URL</Label>
-              <Input value={form.githubUrl} onChange={(event) => setForm((current) => ({ ...current, githubUrl: event.target.value }))} />
-            </div>
-            <div className="space-y-2">
-              <Label>Thumbnail Time (seconds)</Label>
-              <Input type="number" min="0" value={form.thumbnailTime} onChange={(event) => setForm((current) => ({ ...current, thumbnailTime: event.target.value }))} />
-            </div>
-            <div className="space-y-2">
-              <Label>Prompt / Notes</Label>
-              <Textarea value={form.prompt} className="min-h-24" onChange={(event) => setForm((current) => ({ ...current, prompt: event.target.value }))} />
-            </div>
-            <div className="space-y-2">
-              <Label>Tags</Label>
-              <Input value={form.tags} onChange={(event) => setForm((current) => ({ ...current, tags: event.target.value }))} placeholder="video, recap, setup" />
-            </div>
           </div>
         </div>
 
-        <div className="rounded-[1.75rem] border bg-card p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold tracking-tight">Video Delivery</h2>
-          <p className="mt-2 text-sm text-muted-foreground">Current Mux status: {lesson.muxStatus}</p>
-          {lesson.muxPlaybackId ? (
-            <p className="mt-1 text-xs text-muted-foreground">Playback ID: {lesson.muxPlaybackId}</p>
-          ) : null}
-          <div className="mt-5 grid gap-3">
-            <Input type="file" accept="video/*" onChange={(event) => handleMuxUpload(event.target.files?.[0] ?? null)} />
-            <Button variant="outline" className="rounded-full" onClick={handleRefreshMux}>
-              Refresh Mux Status
-            </Button>
+        {/* Video */}
+        <div className="p-5">
+          <h2 className="text-sm font-semibold">Video Delivery</h2>
+          <p className="mt-1 text-xs text-muted-foreground">Status: {lesson.muxStatus}</p>
+          {lesson.muxPlaybackId ? <p className="text-[10px] text-muted-foreground">ID: {lesson.muxPlaybackId}</p> : null}
+          <div className="mt-3 grid gap-2">
+            <Input type="file" accept="video/*" className="text-xs" onChange={(e) => handleMuxUpload(e.target.files?.[0] ?? null)} />
+            <Button variant="outline" size="sm" className="h-7 rounded-lg text-xs" onClick={handleRefreshMux}>Refresh Mux</Button>
           </div>
         </div>
 
-        <div className="rounded-[1.75rem] border bg-card p-6 shadow-sm">
-          <Button onClick={handleSave} disabled={saving} className="h-11 w-full rounded-full">
-            {saving ? "Saving..." : "Save Lesson"}
+        {/* Save */}
+        <div className="p-5">
+          <Button onClick={handleSave} disabled={saving} size="sm" className="h-8 w-full rounded-lg text-xs">
+            {saving ? "Saving…" : "Save Lesson"}
           </Button>
-          {message ? <p className="mt-3 text-sm text-muted-foreground">{message}</p> : null}
+          {message ? <p className="mt-2 text-xs text-muted-foreground">{message}</p> : null}
+          <a
+            href={`/app/courses/${courseId}/${lesson.slug}`}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-2 flex h-7 w-full items-center justify-center rounded-lg border text-xs font-medium transition-colors hover:bg-muted"
+          >
+            Open Learner View
+          </a>
         </div>
-
-        <a
-          href={`/app/courses/${courseId}/${lesson.slug}`}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex h-8 w-full items-center justify-center rounded-full border px-4 text-xs font-medium transition-colors hover:bg-muted"
-        >
-          Open Learner View
-        </a>
-      </aside>
+      </div>
     </div>
   )
 }

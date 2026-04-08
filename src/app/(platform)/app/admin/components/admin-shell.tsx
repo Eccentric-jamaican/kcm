@@ -92,22 +92,22 @@ export function AdminShell({
           <SidebarSeparator />
 
           <SidebarGroup>
-            <SidebarGroupLabel>Quick Links</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-[11px] font-medium tracking-wider text-muted-foreground">QUICK LINKS</SidebarGroupLabel>
             <SidebarGroupContent>
-              <div className="grid gap-2 px-1">
-                <Link href="/app/admin/courses/new" className="rounded-2xl border bg-card px-3 py-3 text-sm transition-colors hover:bg-muted">
-                  <div className="flex items-center gap-2 font-medium">
+              <div className="grid gap-0.5 px-1.5">
+                <Link href="/app/admin/courses/new" className="group flex flex-col gap-0.5 rounded-md px-2.5 py-2 transition-colors hover:bg-sidebar-accent">
+                  <div className="flex items-center gap-2 text-sm font-medium text-sidebar-foreground group-hover:text-sidebar-accent-foreground">
                     <HugeiconsIcon icon={File} strokeWidth={2} className="h-4 w-4" />
                     New Course
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">Start a draft and create its default chapter automatically.</p>
+                  <p className="pl-6 text-xs text-sidebar-foreground/50 transition-colors group-hover:text-sidebar-foreground/70">Start a draft and default chapter.</p>
                 </Link>
-                <Link href="/app/courses" className="rounded-2xl border bg-card px-3 py-3 text-sm transition-colors hover:bg-muted">
-                  <div className="flex items-center gap-2 font-medium">
+                <Link href="/app/courses" className="group flex flex-col gap-0.5 rounded-md px-2.5 py-2 transition-colors hover:bg-sidebar-accent">
+                  <div className="flex items-center gap-2 text-sm font-medium text-sidebar-foreground group-hover:text-sidebar-accent-foreground">
                     <HugeiconsIcon icon={View} strokeWidth={2} className="h-4 w-4" />
                     Learner Library
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">Jump to the public course experience.</p>
+                  <p className="pl-6 text-xs text-sidebar-foreground/50 transition-colors group-hover:text-sidebar-foreground/70">Jump to public course experience.</p>
                 </Link>
               </div>
             </SidebarGroupContent>
@@ -115,22 +115,22 @@ export function AdminShell({
         </SidebarContent>
 
         <SidebarFooter className="border-t border-sidebar-border p-3">
-          <div className="rounded-[1.25rem] border bg-card p-3">
+          <div className="flex flex-col gap-3 px-1 py-1">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">{viewer.name ?? "Course Maintainer"}</p>
-                <p className="truncate text-xs text-muted-foreground">{viewer.email ?? "No email available"}</p>
+                <p className="truncate text-sm font-medium text-sidebar-foreground">{viewer.name ?? "Course Maintainer"}</p>
+                <p className="truncate text-xs text-sidebar-foreground/60">{viewer.email ?? "No email available"}</p>
               </div>
-              <Badge variant="outline" className="rounded-full capitalize">
+              <Badge variant="secondary" className="rounded-md font-normal text-[10px] capitalize text-sidebar-foreground/70">
                 {viewer.role}
               </Badge>
             </div>
-            <div className="mt-3 flex gap-2">
-              <Link href="/app" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-9 flex-1 rounded-full")}>
+            <div className="flex gap-1">
+              <Link href="/app" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "h-8 flex-1 justify-start gap-2 rounded-md font-medium text-sidebar-foreground/70 transition-colors hover:text-sidebar-foreground")}>
                 <HugeiconsIcon icon={Play} strokeWidth={2} className="h-4 w-4" />
                 Exit
               </Link>
-              <Link href="/app/admin/courses" className={cn(buttonVariants({ variant: "secondary", size: "lg" }), "h-9 flex-1 rounded-full")}>
+              <Link href="/app/admin/courses" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "h-8 flex-1 justify-start gap-2 rounded-md font-medium text-sidebar-foreground/70 transition-colors hover:text-sidebar-foreground")}>
                 <HugeiconsIcon icon={Settings02Icon} strokeWidth={2} className="h-4 w-4" />
                 Manage
               </Link>

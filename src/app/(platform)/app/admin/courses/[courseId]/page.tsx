@@ -5,6 +5,7 @@ import { api } from "@/lib/convex-api"
 import { requireConvexServerToken } from "@/lib/convex-server"
 import { AdminCourseForm } from "../../components/admin-course-form"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 export default async function AdminCourseEditorPage({
   params,
@@ -20,21 +21,19 @@ export default async function AdminCourseEditorPage({
   }
 
   return (
-    <main className="px-4 py-6 sm:px-6">
-      <div className="mx-auto max-w-[1400px] space-y-6">
-        <section className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <main className="px-4 py-5 sm:px-6">
+      <div className="mx-auto max-w-[1400px] space-y-5">
+        {/* Page header */}
+        <section className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-semibold tracking-[0.24em] text-muted-foreground">COURSE EDITOR</p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight">{data.course.title}</h1>
-            <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-              Edit metadata, visibility, and the public-facing shell for this course.
-            </p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Course Editor</p>
+            <h1 className="mt-1 text-3xl font-semibold tracking-tight">{data.course.title}</h1>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <a href={`/app/courses/${data.course.slug}`} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "rounded-full")}>
+          <div className="flex gap-2">
+            <a href={`/app/courses/${data.course.slug}`} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-8 rounded-lg text-xs")}>
               Learner View
             </a>
-            <a href={`/app/admin/courses/${courseId}/curriculum`} className={cn(buttonVariants({ size: "lg" }), "rounded-full")}>Open Curriculum</a>
+            <Link href={`/app/admin/courses/${courseId}/curriculum`} className={cn(buttonVariants({ size: "sm" }), "h-8 rounded-lg text-xs")}>Curriculum</Link>
           </div>
         </section>
 

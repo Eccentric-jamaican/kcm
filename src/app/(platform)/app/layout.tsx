@@ -6,6 +6,13 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { Spinner } from "@/components/ui/spinner"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { SearchIcon } from "@hugeicons/core-free-icons"
@@ -23,9 +30,14 @@ function PlatformHeader({
   canAccessAdmin: boolean
 }) {
   const pathname = usePathname()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const isBrowsePage = pathname === "/app/browse"
   const showDesktopSearch = !isBrowsePage
   const showMobileSearch = !isBrowsePage
+
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [pathname])
 
   return (
     <header className="border-b bg-background">
@@ -111,13 +123,73 @@ function PlatformHeader({
           </div>
         </div>
 
-        <button
-          type="button"
-          aria-label="Open navigation menu"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-md text-2xl text-foreground/85 transition-colors hover:bg-muted md:hidden"
-        >
-          ☰
-        </button>
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <button
+            type="button"
+            aria-label="Open navigation menu"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="platform-mobile-navigation"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-2xl text-foreground/85 transition-colors hover:bg-muted md:hidden"
+            onClick={() => setMobileMenuOpen(true)}
+          >
+            ☰
+          </button>
+
+          <SheetContent
+            id="platform-mobile-navigation"
+            side="left"
+            className="w-[min(88vw,24rem)] border-r bg-background p-0 sm:max-w-none"
+          >
+            <SheetHeader className="border-b px-5 py-5 text-left">
+              <SheetTitle>Navigation</SheetTitle>
+              <SheetDescription>
+                Jump between your dashboard, library, and account areas.
+              </SheetDescription>
+            </SheetHeader>
+
+            <div className="flex h-full flex-col">
+              <div className="space-y-2 px-3 py-4">
+                {[
+                  { href: "/app", label: "Dashboard" },
+                  { href: "/app/browse", label: "Browse" },
+                  { href: "/app/webinars", label: "Webinars" },
+                  { href: "/app/browse", label: "Feedback" },
+                  ...(canAccessAdmin ? [{ href: "/app/admin", label: "Admin" }] : []),
+                ].map((item) => {
+                  const isActive =
+                    item.href === "/app"
+                      ? pathname === "/app"
+                      : pathname === item.href || pathname.startsWith(`${item.href}/`)
+
+                  return (
+                    <Link
+                      key={`${item.href}:${item.label}`}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center rounded-xl px-4 py-3 text-base font-medium transition-colors ${
+                        isActive
+                          ? "bg-foreground text-background"
+                          : "text-foreground/85 hover:bg-muted"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  )
+                })}
+              </div>
+
+              <div className="mt-auto border-t px-5 py-4">
+                <div className="flex items-center justify-between gap-3 rounded-2xl bg-muted/50 px-4 py-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-foreground">{displayName}</p>
+                    <p className="text-xs text-muted-foreground">Signed in</p>
+                  </div>
+                  <UserButton />
+                </div>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </header>
   )
@@ -143,6 +215,13 @@ function PlatformShell({
   displayName: string
   canAccessAdmin: boolean
 }>) {
+  const pathname = usePathname()
+  const isAdmin = pathname.startsWith("/app/admin")
+
+  if (isAdmin) {
+    return <div className="min-h-screen bg-[#f2f2f4]">{children}</div>
+  }
+
   return (
     <div className="min-h-screen bg-[#f2f2f4]">
       <PlatformHeader displayName={displayName} canAccessAdmin={canAccessAdmin} />

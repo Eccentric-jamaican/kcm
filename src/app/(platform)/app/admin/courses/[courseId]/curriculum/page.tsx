@@ -3,6 +3,9 @@ import { fetchQuery } from "convex/nextjs"
 import { api } from "@/lib/convex-api"
 import { requireConvexServerToken } from "@/lib/convex-server"
 import { CurriculumBuilder } from "../../../components/curriculum-builder"
+import Link from "next/link"
+import { buttonVariants } from "@/components/ui/button-variants"
+import { cn } from "@/lib/utils"
 
 export default async function AdminCurriculumPage({
   params,
@@ -18,14 +21,14 @@ export default async function AdminCurriculumPage({
   }
 
   return (
-    <main className="px-4 py-6 sm:px-6">
-      <div className="mx-auto max-w-[1400px] space-y-6">
-        <section>
-          <p className="text-xs font-semibold tracking-[0.24em] text-muted-foreground">CURRICULUM BUILDER</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight">{data.course.title}</h1>
-          <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-            Reorder chapters, add lessons, and shape the exact path learners follow from the sidebar and next-lesson flow.
-          </p>
+    <main className="px-4 py-5 sm:px-6">
+      <div className="mx-auto max-w-[1400px] space-y-5">
+        <section className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Curriculum</p>
+            <h1 className="mt-1 text-3xl font-semibold tracking-tight">{data.course.title}</h1>
+          </div>
+          <Link href={`/app/admin/courses/${courseId}`} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-8 rounded-lg text-xs")}>Back to Editor</Link>
         </section>
 
         <CurriculumBuilder courseId={courseId} chapters={data.chapters as never} />

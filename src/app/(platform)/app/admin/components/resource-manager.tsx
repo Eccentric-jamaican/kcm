@@ -56,9 +56,7 @@ export function ResourceManager({
     const { uploadUrl } = await generateUpload({ lessonId: lesson._id as never })
     const response = await fetch(uploadUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": file.type,
-      },
+      headers: { "Content-Type": file.type },
       body: file,
     })
     const payload = (await response.json()) as { storageId: string }
@@ -82,62 +80,73 @@ export function ResourceManager({
     startTransition(() => router.refresh())
   }
 
+  const typeIcon: Record<string, string> = { link: "🔗", file: "📄", video: "🎬" }
+
   return (
-    <div className="space-y-6">
-      <div className="rounded-[1.75rem] border bg-card p-6 shadow-sm">
-        <h2 className="text-2xl font-semibold tracking-tight">{lesson.title}</h2>
-        <p className="mt-2 text-sm text-muted-foreground">Manage the downloadable and external resources attached to this lesson.</p>
-        <div className="mt-5 grid gap-4">
-          <div className="space-y-2">
-            <Label>Type</Label>
-            <Select value={kind} onValueChange={(value) => setKind(value as typeof kind)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+    <div className="space-y-5">
+      {/* Add resource — compact inline form */}
+      <div className="rounded-xl border bg-card p-5">
+        <h2 className="text-sm font-semibold">{lesson.title}</h2>
+        <p className="mt-0.5 text-xs text-muted-foreground">Attach files and links to this lesson.</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-[120px_1fr_1fr_auto]">
+          <div className="space-y-1.5">
+            <Label className="text-xs">Type</Label>
+            <Select value={kind} onValueChange={(v) => setKind(v as typeof kind)}>
+              <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="link">Link</SelectItem>
-                <SelectItem value="file">File Upload</SelectItem>
+                <SelectItem value="file">File</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label>Title</Label>
-            <Input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Cheat sheet, checklist, replay notes..." />
+          <div className="space-y-1.5">
+            <Label className="text-xs">Title</Label>
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Cheat sheet…" />
           </div>
           {kind === "link" ? (
-            <div className="space-y-2">
-              <Label>URL</Label>
-              <Input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://..." />
-              <Button onClick={handleCreateLink} className="rounded-full">Add Link</Button>
-            </div>
+            <>
+              <div className="space-y-1.5">
+                <Label className="text-xs">URL</Label>
+                <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" />
+              </div>
+              <div className="flex items-end">
+                <Button onClick={handleCreateLink} size="sm" className="h-9 rounded-lg text-xs">Add</Button>
+              </div>
+            </>
           ) : (
-            <div className="space-y-2">
-              <Label>Upload file</Label>
-              <Input type="file" onChange={(event) => handleFileUpload(event.target.files?.[0] ?? null)} />
-            </div>
+            <>
+              <div className="space-y-1.5">
+                <Label className="text-xs">File</Label>
+                <Input type="file" className="text-xs" onChange={(e) => handleFileUpload(e.target.files?.[0] ?? null)} />
+              </div>
+              <div />
+            </>
           )}
-          {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
         </div>
+        {message ? <p className="mt-2 text-xs text-muted-foreground">{message}</p> : null}
       </div>
 
-      <div className="grid gap-3">
-        {lesson.resources.length === 0 ? (
-          <div className="rounded-[1.75rem] border border-dashed bg-card p-6 text-sm text-muted-foreground shadow-sm">
-            No resources attached to this lesson yet.
-          </div>
-        ) : (
-          lesson.resources.map((resource) => (
-            <div key={resource._id} className="flex flex-col gap-3 rounded-[1.5rem] border bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold">{resource.title}</p>
-                <p className="mt-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">{resource.type}</p>
-                {resource.url ? <p className="mt-2 break-all text-sm text-muted-foreground">{resource.url}</p> : null}
+      {/* Resource list — compact rows */}
+      {lesson.resources.length === 0 ? (
+        <p className="py-4 text-center text-xs text-muted-foreground">No resources attached yet.</p>
+      ) : (
+        <div className="divide-y rounded-xl border bg-card">
+          {lesson.resources.map((resource) => (
+            <div key={resource._id} className="flex items-center justify-between gap-3 px-4 py-2.5">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="text-sm">{typeIcon[resource.type] ?? "📎"}</span>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">{resource.title}</p>
+                  {resource.url ? <p className="truncate text-xs text-muted-foreground">{resource.url}</p> : null}
+                </div>
               </div>
-              <Button variant="outline" className="rounded-full" onClick={() => handleDelete(resource._id)}>
+              <Button variant="ghost" size="sm" className="h-6 shrink-0 rounded px-2 text-xs text-muted-foreground hover:text-destructive" onClick={() => handleDelete(resource._id)}>
                 Remove
               </Button>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

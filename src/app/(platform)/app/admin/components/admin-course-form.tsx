@@ -56,9 +56,7 @@ export function AdminCourseForm({ course }: { course: CourseFormValue }) {
     const { uploadUrl } = await createUploadUrl({ courseId: course._id as never })
     const response = await fetch(uploadUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": file.type,
-      },
+      headers: { "Content-Type": file.type },
       body: file,
     })
     const payload = (await response.json()) as { storageId: string }
@@ -68,7 +66,7 @@ export function AdminCourseForm({ course }: { course: CourseFormValue }) {
       coverImageUrl: current.coverImageUrl,
       coverImageAlt: current.coverImageAlt || current.title,
     }))
-    setMessage(`Uploaded ${file.name}. Save the course to attach it.`)
+    setMessage(`Uploaded ${file.name}. Save to attach.`)
   }
 
   async function handleSave() {
@@ -88,58 +86,69 @@ export function AdminCourseForm({ course }: { course: CourseFormValue }) {
         coverImageUrl: form.coverImageUrl,
         coverImageAlt: form.coverImageAlt,
         githubUrl: form.githubUrl.trim() || null,
-        tags: form.tags
-          .split(",")
-          .map((value) => value.trim())
-          .filter(Boolean),
+        tags: form.tags.split(",").map((v) => v.trim()).filter(Boolean),
         level: form.level,
         estimatedDurationMinutes: form.estimatedDurationMinutes ? Number(form.estimatedDurationMinutes) : null,
       })
-      setMessage("Course saved.")
+      setMessage("Saved.")
       startTransition(() => router.refresh())
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to save this course.")
+      setMessage(error instanceof Error ? error.message : "Unable to save.")
     } finally {
       setSaving(false)
     }
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-      <section className="space-y-6">
-        <div className="rounded-[1.75rem] border bg-card p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold tracking-tight">Course Identity</h2>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="course-title">Title</Label>
-              <Input id="course-title" value={form.title} onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))} />
+    <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      {/* Main form — flat sections with border-b dividers */}
+      <div className="space-y-0 divide-y rounded-xl border bg-card">
+        {/* Identity */}
+        <div className="p-5">
+          <h2 className="text-sm font-semibold">Course Identity</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label htmlFor="course-title" className="text-xs">Title</Label>
+              <Input id="course-title" value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} />
             </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="course-subtitle">Subtitle</Label>
-              <Input id="course-subtitle" value={form.subtitle} onChange={(event) => setForm((current) => ({ ...current, subtitle: event.target.value }))} />
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label htmlFor="course-subtitle" className="text-xs">Subtitle</Label>
+              <Input id="course-subtitle" value={form.subtitle} onChange={(e) => setForm((c) => ({ ...c, subtitle: e.target.value }))} />
             </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="course-slug">Slug</Label>
-              <Input id="course-slug" value={form.slug} onChange={(event) => setForm((current) => ({ ...current, slug: event.target.value }))} />
+            <div className="space-y-1.5">
+              <Label htmlFor="course-slug" className="text-xs">Slug</Label>
+              <Input id="course-slug" value={form.slug} onChange={(e) => setForm((c) => ({ ...c, slug: e.target.value }))} />
             </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="course-description">Description</Label>
-              <Textarea id="course-description" value={form.description} className="min-h-28" onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} />
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="course-body">Overview / Body</Label>
-              <Textarea id="course-body" value={form.body} className="min-h-40" onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))} />
+            <div className="space-y-1.5">
+              <Label htmlFor="github-url" className="text-xs">GitHub URL</Label>
+              <Input id="github-url" value={form.githubUrl} onChange={(e) => setForm((c) => ({ ...c, githubUrl: e.target.value }))} placeholder="https://github.com/…" />
             </div>
           </div>
         </div>
 
-        <div className="rounded-[1.75rem] border bg-card p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold tracking-tight">Positioning</h2>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Level</Label>
-              <Select value={form.level} onValueChange={(value) => setForm((current) => ({ ...current, level: value as typeof current.level }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+        {/* Content */}
+        <div className="p-5">
+          <h2 className="text-sm font-semibold">Content</h2>
+          <div className="mt-4 grid gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="course-description" className="text-xs">Description</Label>
+              <Textarea id="course-description" value={form.description} className="min-h-20" onChange={(e) => setForm((c) => ({ ...c, description: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="course-body" className="text-xs">Overview / Body</Label>
+              <Textarea id="course-body" value={form.body} className="min-h-32" onChange={(e) => setForm((c) => ({ ...c, body: e.target.value }))} />
+            </div>
+          </div>
+        </div>
+
+        {/* Positioning */}
+        <div className="p-5">
+          <h2 className="text-sm font-semibold">Positioning</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Level</Label>
+              <Select value={form.level} onValueChange={(v) => setForm((c) => ({ ...c, level: v as typeof c.level }))}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Beginner">Beginner</SelectItem>
                   <SelectItem value="Intermediate">Intermediate</SelectItem>
@@ -148,30 +157,28 @@ export function AdminCourseForm({ course }: { course: CourseFormValue }) {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="estimated-duration">Estimated Duration (minutes)</Label>
-              <Input id="estimated-duration" type="number" min="0" value={form.estimatedDurationMinutes} onChange={(event) => setForm((current) => ({ ...current, estimatedDurationMinutes: event.target.value }))} />
+            <div className="space-y-1.5">
+              <Label htmlFor="estimated-duration" className="text-xs">Duration (min)</Label>
+              <Input id="estimated-duration" type="number" min="0" value={form.estimatedDurationMinutes} onChange={(e) => setForm((c) => ({ ...c, estimatedDurationMinutes: e.target.value }))} />
             </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="course-tags">Tags</Label>
-              <Input id="course-tags" value={form.tags} onChange={(event) => setForm((current) => ({ ...current, tags: event.target.value }))} placeholder="forex, psychology, risk management" />
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="github-url">Source Code / GitHub URL</Label>
-              <Input id="github-url" value={form.githubUrl} onChange={(event) => setForm((current) => ({ ...current, githubUrl: event.target.value }))} placeholder="https://github.com/your-org/repo" />
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label htmlFor="course-tags" className="text-xs">Tags</Label>
+              <Input id="course-tags" value={form.tags} onChange={(e) => setForm((c) => ({ ...c, tags: e.target.value }))} placeholder="forex, psychology, risk" />
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <aside className="space-y-6">
-        <div className="rounded-[1.75rem] border bg-card p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold tracking-tight">Publishing</h2>
-          <div className="mt-5 grid gap-4">
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select value={form.status} onValueChange={(value) => setForm((current) => ({ ...current, status: value as typeof current.status }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+      {/* Sidebar — publishing, cover, save */}
+      <div className="space-y-0 divide-y rounded-xl border bg-card lg:self-start lg:sticky lg:top-4">
+        {/* Publishing */}
+        <div className="p-5">
+          <h2 className="text-sm font-semibold">Publishing</h2>
+          <div className="mt-4 grid gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Status</Label>
+              <Select value={form.status} onValueChange={(v) => setForm((c) => ({ ...c, status: v as typeof c.status }))}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="draft">Draft</SelectItem>
                   <SelectItem value="published">Published</SelectItem>
@@ -179,10 +186,10 @@ export function AdminCourseForm({ course }: { course: CourseFormValue }) {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>Visibility</Label>
-              <Select value={form.visibility} onValueChange={(value) => setForm((current) => ({ ...current, visibility: value as typeof current.visibility }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Visibility</Label>
+              <Select value={form.visibility} onValueChange={(v) => setForm((c) => ({ ...c, visibility: v as typeof c.visibility }))}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="private">Private</SelectItem>
                   <SelectItem value="public">Public</SelectItem>
@@ -193,34 +200,36 @@ export function AdminCourseForm({ course }: { course: CourseFormValue }) {
           </div>
         </div>
 
-        <div className="rounded-[1.75rem] border bg-card p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold tracking-tight">Cover Image</h2>
-          <div className="mt-5 space-y-4">
-            <div className="overflow-hidden rounded-[1.5rem] border bg-muted">
+        {/* Cover image */}
+        <div className="p-5">
+          <h2 className="text-sm font-semibold">Cover Image</h2>
+          <div className="mt-4 space-y-3">
+            <div className="overflow-hidden rounded-lg border bg-muted">
               {form.coverImageUrl ? (
                 <img src={form.coverImageUrl} alt={form.coverImageAlt || form.title} className="aspect-video w-full object-cover" />
               ) : (
                 <div className="aspect-video w-full bg-[radial-gradient(circle_at_top_left,rgba(27,156,72,0.18),transparent_50%),linear-gradient(180deg,#fafaf8,white)]" />
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="cover-alt">Alt text</Label>
-              <Input id="cover-alt" value={form.coverImageAlt || ""} onChange={(event) => setForm((current) => ({ ...current, coverImageAlt: event.target.value }))} />
+            <div className="space-y-1.5">
+              <Label htmlFor="cover-alt" className="text-xs">Alt text</Label>
+              <Input id="cover-alt" value={form.coverImageAlt || ""} onChange={(e) => setForm((c) => ({ ...c, coverImageAlt: e.target.value }))} />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="cover-upload">Upload image</Label>
-              <Input id="cover-upload" type="file" accept="image/*" onChange={(event) => handleFileChange(event.target.files?.[0] ?? null)} />
+            <div className="space-y-1.5">
+              <Label htmlFor="cover-upload" className="text-xs">Upload</Label>
+              <Input id="cover-upload" type="file" accept="image/*" onChange={(e) => handleFileChange(e.target.files?.[0] ?? null)} />
             </div>
           </div>
         </div>
 
-        <div className="rounded-[1.75rem] border bg-card p-6 shadow-sm">
-          <Button onClick={handleSave} disabled={saving} className="h-11 w-full rounded-full">
-            {saving ? "Saving..." : "Save Course"}
+        {/* Save */}
+        <div className="p-5">
+          <Button onClick={handleSave} disabled={saving} size="sm" className="h-8 w-full rounded-lg text-xs">
+            {saving ? "Saving…" : "Save Course"}
           </Button>
-          {message ? <p className="mt-3 text-sm text-muted-foreground">{message}</p> : null}
+          {message ? <p className="mt-2 text-xs text-muted-foreground">{message}</p> : null}
         </div>
-      </aside>
+      </div>
     </div>
   )
 }

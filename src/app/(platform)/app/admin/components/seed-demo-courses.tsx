@@ -32,16 +32,16 @@ export function SeedDemoCourses() {
   }
 
   return (
-    <div className="rounded-[1.5rem] border bg-card p-5 shadow-sm">
-      <p className="text-sm font-semibold">Need starter content?</p>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Seed the Antonio-inspired demo library into Convex so the learner routes and admin flows have real course data to manage.
-      </p>
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <Button onClick={handleSeed} disabled={pending || !viewer?._id} className="rounded-full">
-          {pending ? "Seeding..." : "Seed Demo Courses"}
+    <div className="flex items-center justify-between gap-4 rounded-lg bg-muted/60 px-4 py-3">
+      <div className="min-w-0">
+        <p className="text-sm font-medium">Need starter content?</p>
+        <p className="text-xs text-muted-foreground">Seed demo courses so admin flows have real data.</p>
+      </div>
+      <div className="flex shrink-0 items-center gap-3">
+        {message ? <p className="text-xs text-muted-foreground">{message}</p> : null}
+        <Button size="sm" variant="outline" onClick={handleSeed} disabled={pending || !viewer?._id} className="h-8 rounded-lg text-xs">
+          {pending ? "Seeding…" : "Seed Demos"}
         </Button>
-        {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
       </div>
     </div>
   )
