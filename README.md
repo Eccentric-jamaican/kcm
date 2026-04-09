@@ -20,6 +20,22 @@ This prject is a web application for a Learning Management Platform for a course
 
 - The goal is to create a web application for a Learning Management Platform for a course creator. The application should be fast responsive on all screen sizes, high fidelity and user friendly (A grandma should be able to use it with ease).
 
+### Mux Environment Variables
+
+Private paid-course playback uses signed Mux playback tokens. Configure these server-side secrets before testing uploads and playback:
+
+- `MUX_TOKEN_ID`
+- `MUX_TOKEN_SECRET`
+- `MUX_WEBHOOK_SECRET`
+- `MUX_SIGNING_KEY_ID`
+- `MUX_SIGNING_PRIVATE_KEY`
+
+Notes:
+
+- `MUX_TOKEN_ID` and `MUX_TOKEN_SECRET` are used for Mux API calls such as creating direct uploads.
+- `MUX_SIGNING_KEY_ID` and `MUX_SIGNING_PRIVATE_KEY` are used only for signing short-lived playback JWTs.
+- The Mux signing private key is only shown once when you create the signing key in Mux. Save it immediately in your deployment and local env configuration.
+
 ### Proposed Routes
 
 / marketingsite (KCMTRADES.COM)

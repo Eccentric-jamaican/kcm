@@ -217,8 +217,9 @@ function PlatformShell({
 }>) {
   const pathname = usePathname()
   const isAdmin = pathname.startsWith("/app/admin")
+  const isCourseLesson = /^\/app\/courses\/[^/]+\/[^/]+$/.test(pathname)
 
-  if (isAdmin) {
+  if (isAdmin || isCourseLesson) {
     return <div className="min-h-screen bg-[#f2f2f4]">{children}</div>
   }
 

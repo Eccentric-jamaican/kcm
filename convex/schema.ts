@@ -30,6 +30,11 @@ export const muxStatusValidator = v.union(
   v.literal("errored"),
 );
 
+export const muxPlaybackPolicyValidator = v.union(
+  v.literal("public"),
+  v.literal("signed"),
+);
+
 export const transcriptStatusValidator = v.union(
   v.literal("none"),
   v.literal("processing"),
@@ -48,6 +53,18 @@ export const accessTypeValidator = v.union(
   v.literal("staff"),
   v.literal("student"),
 );
+
+export const muxProjectionStatusValidator = v.union(
+  v.literal("pending"),
+  v.literal("processed"),
+  v.literal("failed"),
+  v.literal("dead_letter"),
+);
+
+const muxPlaybackIdObjectValidator = v.object({
+  id: v.string(),
+  policy: v.optional(v.string()),
+});
 
 export default defineSchema({
   users: defineTable({
@@ -131,15 +148,18 @@ export default defineSchema({
     muxUploadId: v.union(v.string(), v.null()),
     muxAssetId: v.union(v.string(), v.null()),
     muxPlaybackId: v.union(v.string(), v.null()),
-    muxPlaybackPolicy: v.optional(v.union(v.literal("signed"), v.literal("public"))),
+    muxPlaybackPolicy: v.optional(muxPlaybackPolicyValidator),
     muxStatus: muxStatusValidator,
     durationSeconds: v.union(v.number(), v.null()),
-    transcriptStatus: transcriptStatusValidator,
     transcriptTrackId: v.optional(v.union(v.string(), v.null())),
+    transcriptStatus: transcriptStatusValidator,
   })
     .index("by_courseId_and_position", ["courseId", "position"])
     .index("by_chapterId_and_position", ["chapterId", "position"])
-    .index("by_courseId_and_slug", ["courseId", "slug"]),
+    .index("by_courseId_and_slug", ["courseId", "slug"])
+    .index("by_muxUploadId", ["muxUploadId"])
+    .index("by_muxAssetId", ["muxAssetId"])
+    .index("by_muxPlaybackId", ["muxPlaybackId"]),
 
   lessonResources: defineTable({
     lessonId: v.id("courseLessons"),
@@ -178,4 +198,59 @@ export default defineSchema({
     .index("by_userId_and_courseId", ["userId", "courseId"])
     .index("by_userId_and_lessonId", ["userId", "lessonId"])
     .index("by_courseId_and_userId", ["courseId", "userId"]),
+
+  userPlaybackPreferences: defineTable({
+    userId: v.id("users"),
+    autoplayNextLesson: v.boolean(),
+    updatedAtMs: v.number(),
+  }).index("by_userId", ["userId"]),
+
+  muxAssets: defineTable({
+    muxAssetId: v.string(),
+    status: v.union(v.string(), v.null()),
+    playbackIds: v.optional(v.array(muxPlaybackIdObjectValidator)),
+    durationSeconds: v.union(v.number(), v.null()),
+    uploadId: v.union(v.string(), v.null()),
+    createdAtMs: v.number(),
+    updatedAtMs: v.number(),
+    deletedAtMs: v.union(v.number(), v.null()),
+    raw: v.record(v.string(), v.any()),
+  })
+    .index("by_mux_asset_id", ["muxAssetId"])
+    .index("by_status", ["status"])
+    .index("by_updated_at", ["updatedAtMs"]),
+
+  muxUploads: defineTable({
+    muxUploadId: v.string(),
+    status: v.union(v.string(), v.null()),
+    uploadUrl: v.union(v.string(), v.null()),
+    assetId: v.union(v.string(), v.null()),
+    createdAtMs: v.number(),
+    updatedAtMs: v.number(),
+    deletedAtMs: v.union(v.number(), v.null()),
+    raw: v.record(v.string(), v.any()),
+  })
+    .index("by_mux_upload_id", ["muxUploadId"])
+    .index("by_status", ["status"])
+    .index("by_updated_at", ["updatedAtMs"]),
+
+  muxEvents: defineTable({
+    muxEventId: v.union(v.string(), v.null()),
+    type: v.string(),
+    objectType: v.union(v.string(), v.null()),
+    objectId: v.union(v.string(), v.null()),
+    receivedAtMs: v.number(),
+    verified: v.boolean(),
+    raw: v.record(v.string(), v.any()),
+    projectionStatus: muxProjectionStatusValidator,
+    projectionAttempts: v.number(),
+    projectionLastError: v.union(v.string(), v.null()),
+    nextRetryAtMs: v.number(),
+    projectedAtMs: v.union(v.number(), v.null()),
+  })
+    .index("by_mux_event_id", ["muxEventId"])
+    .index("by_type", ["type"])
+    .index("by_object", ["objectType", "objectId"])
+    .index("by_received_at", ["receivedAtMs"])
+    .index("by_projection_status_and_next_retry", ["projectionStatus", "nextRetryAtMs"]),
 });

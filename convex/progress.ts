@@ -13,6 +13,48 @@ export const getCourseProgress = query({
   },
 });
 
+export const getUserPlaybackPreferences = query({
+  args: {},
+  handler: async (ctx) => {
+    const viewer = await requireViewer(ctx);
+    const prefs = await ctx.db
+      .query("userPlaybackPreferences")
+      .withIndex("by_userId", (q) => q.eq("userId", viewer.user._id))
+      .unique();
+
+    return {
+      autoplayNextLesson: prefs?.autoplayNextLesson ?? false,
+    };
+  },
+});
+
+export const setUserPlaybackPreferences = mutation({
+  args: {
+    autoplayNextLesson: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const viewer = await requireViewer(ctx);
+    const existing = await ctx.db
+      .query("userPlaybackPreferences")
+      .withIndex("by_userId", (q) => q.eq("userId", viewer.user._id))
+      .unique();
+
+    const patch = {
+      userId: viewer.user._id,
+      autoplayNextLesson: args.autoplayNextLesson,
+      updatedAtMs: Date.now(),
+    };
+
+    if (existing) {
+      await ctx.db.patch(existing._id, patch);
+      return await ctx.db.get(existing._id);
+    }
+
+    const prefId = await ctx.db.insert("userPlaybackPreferences", patch);
+    return await ctx.db.get(prefId);
+  },
+});
+
 export const markLessonComplete = mutation({
   args: {
     courseId: v.id("courses"),
@@ -67,6 +109,42 @@ export const saveLessonPlayback = mutation({
       completedAt: existing?.completedAt ?? null,
       lastWatchedAt: Date.now(),
       playheadSeconds: args.playheadSeconds,
+    };
+
+    if (existing) {
+      await ctx.db.patch(existing._id, patch);
+      return await ctx.db.get(existing._id);
+    }
+
+    const progressId = await ctx.db.insert("lessonProgress", patch);
+    return await ctx.db.get(progressId);
+  },
+});
+
+export const recordLessonPlaybackHeartbeat = mutation({
+  args: {
+    courseId: v.id("courses"),
+    lessonId: v.id("courseLessons"),
+    playheadSeconds: v.number(),
+    durationSeconds: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const viewer = await requireViewer(ctx);
+    const existing = await ctx.db
+      .query("lessonProgress")
+      .withIndex("by_userId_and_lessonId", (q) => q.eq("userId", viewer.user._id).eq("lessonId", args.lessonId))
+      .unique();
+
+    const boundedPlayheadSeconds = Math.max(0, Math.min(args.playheadSeconds, Math.max(args.durationSeconds, 0)));
+
+    const patch = {
+      courseId: args.courseId,
+      lessonId: args.lessonId,
+      userId: viewer.user._id,
+      completed: existing?.completed ?? false,
+      completedAt: existing?.completedAt ?? null,
+      lastWatchedAt: Date.now(),
+      playheadSeconds: boundedPlayheadSeconds,
     };
 
     if (existing) {

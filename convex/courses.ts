@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { v } from "convex/values";
-import { query } from "./_generated/server";
-import { requireViewer } from "./lib/auth";
+import { internalQuery, query } from "./_generated/server";
+import { requireCoursePlaybackAccess, requireViewer } from "./lib/auth";
 
 async function getSignedStorageUrl(ctx: any, storageId: any) {
   if (!storageId) {
@@ -44,6 +44,14 @@ function groupLessonsByChapter(chapters: any[], lessons: any[]) {
     ...chapter,
     lessons: lessons.filter((lesson) => lesson.chapterId === chapter._id),
   }));
+}
+
+async function ensureViewerCanReadPublishedCourse(ctx: any, course: any) {
+  if (course.visibility === "public") {
+    return null;
+  }
+
+  return await requireCoursePlaybackAccess(ctx, course._id);
 }
 
 export const listPublished = query({
@@ -150,6 +158,124 @@ export const getPublishedLessonBySlug = query({
   },
 });
 
+export const getCourseBySlugForViewer = query({
+  args: { slug: v.string() },
+  handler: async (ctx, args) => {
+    const course = await ctx.db
+      .query("courses")
+      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+      .unique();
+
+    if (!course || course.status !== "published") {
+      return null;
+    }
+
+    await ensureViewerCanReadPublishedCourse(ctx, course);
+
+    const [chapters, lessons] = await Promise.all([
+      loadCourseChapters(ctx, course._id),
+      loadCourseLessons(ctx, course._id),
+    ]);
+
+    return {
+      course: {
+        ...course,
+        coverImageUrl: course.coverImageUrl ?? (await getSignedStorageUrl(ctx, course.coverImageStorageId)),
+      },
+      chapters: groupLessonsByChapter(chapters, lessons),
+      lessons,
+      firstLessonSlug: lessons[0]?.slug ?? null,
+    };
+  },
+});
+
+export const getLessonBySlugForViewer = query({
+  args: {
+    courseSlug: v.string(),
+    lessonSlug: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const course = await ctx.db
+      .query("courses")
+      .withIndex("by_slug", (q) => q.eq("slug", args.courseSlug))
+      .unique();
+
+    if (!course || course.status !== "published") {
+      return null;
+    }
+
+    await ensureViewerCanReadPublishedCourse(ctx, course);
+
+    const lessons = await loadCourseLessons(ctx, course._id);
+    const lesson = lessons.find((entry: (typeof lessons)[number]) => entry.slug === args.lessonSlug);
+
+    if (!lesson || lesson.state !== "published") {
+      return null;
+    }
+
+    const lessonResources = await loadLessonResources(
+      ctx,
+      lessons.map((entry: (typeof lessons)[number]) => entry._id),
+    );
+
+    const chapters = await loadCourseChapters(ctx, course._id);
+    const currentIndex = lessons.findIndex((entry: (typeof lessons)[number]) => entry._id === lesson._id);
+    let progress = null;
+
+    try {
+      const viewer = await requireViewer(ctx);
+      progress = await ctx.db
+        .query("lessonProgress")
+        .withIndex("by_userId_and_lessonId", (q) => q.eq("userId", viewer.user._id).eq("lessonId", lesson._id))
+        .unique();
+    } catch {
+      progress = null;
+    }
+
+    return {
+      course: {
+        ...course,
+        coverImageUrl: course.coverImageUrl ?? (await getSignedStorageUrl(ctx, course.coverImageStorageId)),
+      },
+      lesson,
+      chapters: groupLessonsByChapter(chapters, lessons),
+      navigation: {
+        previousLesson: currentIndex > 0 ? lessons[currentIndex - 1] : null,
+        nextLesson: currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null,
+      },
+      resources: lessonResources[lesson._id] ?? [],
+      progress,
+    };
+  },
+});
+
+export const getLessonPlaybackDetails = internalQuery({
+  args: {
+    lessonId: v.id("courseLessons"),
+  },
+  handler: async (ctx, args) => {
+    const lesson = await ctx.db.get(args.lessonId);
+    if (!lesson) {
+      throw new Error("Lesson not found");
+    }
+
+    const { course } = await requireCoursePlaybackAccess(ctx, lesson.courseId);
+
+    if (course.status !== "published") {
+      throw new Error("Lesson is not published");
+    }
+
+    if (lesson.state !== "published") {
+      throw new Error("Lesson is not published");
+    }
+
+    return {
+      course,
+      lesson,
+    };
+  },
+});
+
 export const getCourseNavigation = query({
   args: { courseId: v.id("courses") },
   handler: async (ctx, args) => {
@@ -167,5 +293,17 @@ export const getCourseNavigation = query({
       course,
       chapters: groupLessonsByChapter(chapters, lessons),
     };
+  },
+});
+
+export const listLessonsByMuxAssetId = internalQuery({
+  args: {
+    muxAssetId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("courseLessons")
+      .withIndex("by_muxAssetId", (q) => q.eq("muxAssetId", args.muxAssetId))
+      .take(50);
   },
 });

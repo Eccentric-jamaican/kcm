@@ -117,6 +117,7 @@ export const seedCoursesAndLessons = mutation({
           muxPlaybackId: null,
           muxStatus: "idle",
           durationSeconds: lesson.durationMinutes * 60,
+          transcriptTrackId: null,
           transcriptStatus: "none",
         });
       }
