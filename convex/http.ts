@@ -3,6 +3,7 @@ import { internal } from "./_generated/api";
 import { httpAction } from "./_generated/server";
 
 const http = httpRouter();
+const MUX_SIGNATURE_TOLERANCE_SEC = 300;
 
 async function verifyMuxSignature(signatureHeader: string | null, body: string) {
   const secret = process.env.MUX_WEBHOOK_SECRET;
@@ -19,6 +20,14 @@ async function verifyMuxSignature(signatureHeader: string | null, body: string) 
   const signature = values.v1;
 
   if (!timestamp || !signature) {
+    return false;
+  }
+  const ts = Number.parseInt(timestamp, 10);
+  if (!Number.isFinite(ts) || !Number.isInteger(ts)) {
+    return false;
+  }
+  const nowSec = Math.floor(Date.now() / 1000);
+  if (Math.abs(nowSec - ts) > MUX_SIGNATURE_TOLERANCE_SEC) {
     return false;
   }
 
@@ -90,13 +99,9 @@ http.route({
       return new Response("No lesson for upload", { status: 200 });
     }
 
+    const isAssetEvent = payload.type === "video.asset.ready" || payload.type === "video.asset.errored";
     const playbackId = payload.data?.playback_ids?.[0]?.id ?? null;
-    const muxStatus =
-      payload.type === "video.asset.ready"
-        ? "ready"
-        : payload.type === "video.asset.errored"
-          ? "errored"
-          : "processing";
+    const muxStatus = payload.type === "video.asset.ready" ? "ready" : payload.type === "video.asset.errored" ? "errored" : undefined;
 
     // Only set transcriptStatus for explicit track events; leave it
     // undefined for asset-level events so we don't regress an existing value.
@@ -113,14 +118,29 @@ http.route({
       }
     }
 
-    await ctx.runMutation(internal.admin.updateMuxLessonStatus, {
+    const mutationArgs: {
+      lessonId: typeof lessonRecord.lessonId;
+      muxAssetId?: string | null;
+      muxPlaybackId?: string | null;
+      muxStatus?: "ready" | "errored";
+      durationSeconds?: number | null;
+      transcriptStatus?: "none" | "processing" | "ready" | "errored";
+    } = {
       lessonId: lessonRecord.lessonId,
-      muxAssetId: payload.data?.id ?? null,
-      muxPlaybackId: playbackId,
-      muxStatus,
-      durationSeconds: payload.data?.duration ? Math.round(payload.data.duration) : null,
       ...(transcriptStatus !== undefined ? { transcriptStatus } : {}),
-    });
+      ...(isAssetEvent
+        ? {
+            muxAssetId: payload.data?.id ?? null,
+            muxPlaybackId: playbackId,
+            muxStatus,
+            durationSeconds: typeof payload.data?.duration === "number" ? Math.round(payload.data.duration) : null,
+          }
+        : {}),
+    };
+
+    if (isAssetEvent || transcriptStatus !== undefined) {
+      await ctx.runMutation(internal.admin.updateMuxLessonStatus, mutationArgs);
+    }
 
     return new Response("ok", { status: 200 });
   }),
