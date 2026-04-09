@@ -86,14 +86,38 @@ async function processQueryInBatches<T>(fetchBatch: () => Promise<T[]>, pageSize
 }
 
 async function syncCourseCounts(ctx: any, courseId: Id<"courses">) {
-  const [chapters, lessons] = await Promise.all([
-    ctx.db.query("courseChapters").withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", courseId)).take(100),
-    ctx.db.query("courseLessons").withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", courseId)).take(500),
-  ]);
+  let chapterCount = 0;
+  let lessonCount = 0;
+
+  // Count chapters in batches
+  await processQueryInBatches(
+    () =>
+      ctx.db
+        .query("courseChapters")
+        .withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", courseId))
+        .take(500),
+    500,
+    async () => {
+      chapterCount += 1;
+    },
+  );
+
+  // Count lessons in batches
+  await processQueryInBatches(
+    () =>
+      ctx.db
+        .query("courseLessons")
+        .withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", courseId))
+        .take(500),
+    500,
+    async () => {
+      lessonCount += 1;
+    },
+  );
 
   await ctx.db.patch(courseId, {
-    chapterCount: chapters.length,
-    lessonCount: lessons.length,
+    chapterCount,
+    lessonCount,
   });
 }
 
@@ -513,7 +537,10 @@ export const deleteChapter = mutation({
       () => ctx.db.query("courseLessons").withIndex("by_chapterId_and_position", (q) => q.eq("chapterId", chapter._id)).take(200),
       200,
       async (lesson: any) => {
-        await ctx.db.patch(lesson._id, { chapterId: course.defaultChapterId! });
+        if (!course.defaultChapterId) {
+          throw new Error("Course has no default chapter to migrate lessons to");
+        }
+        await ctx.db.patch(lesson._id, { chapterId: course.defaultChapterId });
       },
     );
 
@@ -616,6 +643,16 @@ export const updateLesson = mutation({
       throw new Error("Lesson not found");
     }
     await assertCanManageCourse(ctx, lesson.courseId);
+
+    // Verify chapter belongs to the same course
+    const chapter = await ctx.db.get(args.chapterId);
+    if (!chapter) {
+      throw new Error("Chapter not found");
+    }
+    if (chapter.courseId !== lesson.courseId) {
+      throw new Error("Chapter does not belong to this course");
+    }
+
     await ctx.db.patch(args.lessonId, {
       title: args.title,
       slug: await ensureUniqueLessonSlug(ctx, lesson.courseId, args.slug || args.title, lesson._id),
