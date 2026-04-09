@@ -6,6 +6,13 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { Spinner } from "@/components/ui/spinner"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { SearchIcon } from "@hugeicons/core-free-icons"
@@ -15,11 +22,22 @@ const authEnabled = Boolean(
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.NEXT_PUBLIC_CONVEX_URL
 )
 
-function PlatformHeader({ displayName }: { displayName: string }) {
+function PlatformHeader({
+  displayName,
+  canAccessAdmin,
+}: {
+  displayName: string
+  canAccessAdmin: boolean
+}) {
   const pathname = usePathname()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const isBrowsePage = pathname === "/app/browse"
   const showDesktopSearch = !isBrowsePage
   const showMobileSearch = !isBrowsePage
+
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [pathname])
 
   return (
     <header className="border-b bg-background">
@@ -90,6 +108,14 @@ function PlatformHeader({ displayName }: { displayName: string }) {
           >
             Feedback
           </Link>
+          {canAccessAdmin ? (
+            <Link
+              href="/app/admin"
+              className="hidden text-lg font-medium text-foreground/90 transition-colors hover:text-foreground sm:inline-block"
+            >
+              Admin
+            </Link>
+          ) : null}
 
           <div className="inline-flex items-center gap-3 rounded-full px-1 py-1">
             <span className="hidden text-sm font-medium sm:inline">{displayName}</span>
@@ -97,13 +123,73 @@ function PlatformHeader({ displayName }: { displayName: string }) {
           </div>
         </div>
 
-        <button
-          type="button"
-          aria-label="Open navigation menu"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-md text-2xl text-foreground/85 transition-colors hover:bg-muted md:hidden"
-        >
-          ☰
-        </button>
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <button
+            type="button"
+            aria-label="Open navigation menu"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="platform-mobile-navigation"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-2xl text-foreground/85 transition-colors hover:bg-muted md:hidden"
+            onClick={() => setMobileMenuOpen(true)}
+          >
+            ☰
+          </button>
+
+          <SheetContent
+            id="platform-mobile-navigation"
+            side="left"
+            className="w-[min(88vw,24rem)] border-r bg-background p-0 sm:max-w-none"
+          >
+            <SheetHeader className="border-b px-5 py-5 text-left">
+              <SheetTitle>Navigation</SheetTitle>
+              <SheetDescription>
+                Jump between your dashboard, library, and account areas.
+              </SheetDescription>
+            </SheetHeader>
+
+            <div className="flex h-full flex-col">
+              <div className="space-y-2 px-3 py-4">
+                {[
+                  { href: "/app", label: "Dashboard" },
+                  { href: "/app/browse", label: "Browse" },
+                  { href: "/app/webinars", label: "Webinars" },
+                  { href: "/app/browse", label: "Feedback" },
+                  ...(canAccessAdmin ? [{ href: "/app/admin", label: "Admin" }] : []),
+                ].map((item) => {
+                  const isActive =
+                    item.href === "/app"
+                      ? pathname === "/app"
+                      : pathname === item.href || pathname.startsWith(`${item.href}/`)
+
+                  return (
+                    <Link
+                      key={`${item.href}:${item.label}`}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center rounded-xl px-4 py-3 text-base font-medium transition-colors ${
+                        isActive
+                          ? "bg-foreground text-background"
+                          : "text-foreground/85 hover:bg-muted"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  )
+                })}
+              </div>
+
+              <div className="mt-auto border-t px-5 py-4">
+                <div className="flex items-center justify-between gap-3 rounded-2xl bg-muted/50 px-4 py-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-foreground">{displayName}</p>
+                    <p className="text-xs text-muted-foreground">Signed in</p>
+                  </div>
+                  <UserButton />
+                </div>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </header>
   )
@@ -123,13 +209,22 @@ function PlatformLoadingShell({ message }: { message: string }) {
 function PlatformShell({
   children,
   displayName,
+  canAccessAdmin,
 }: Readonly<{
   children: React.ReactNode
   displayName: string
+  canAccessAdmin: boolean
 }>) {
+  const pathname = usePathname()
+  const isAdmin = pathname.startsWith("/app/admin")
+
+  if (isAdmin) {
+    return <div className="min-h-screen bg-[#f2f2f4]">{children}</div>
+  }
+
   return (
     <div className="min-h-screen bg-[#f2f2f4]">
-      <PlatformHeader displayName={displayName} />
+      <PlatformHeader displayName={displayName} canAccessAdmin={canAccessAdmin} />
       <div className="mx-auto w-full max-w-[1400px]">{children}</div>
     </div>
   )
@@ -152,23 +247,16 @@ function AuthenticatedPlatformLayout({
   const viewer = useQuery(api.users.viewer, (syncedUserId === userId && userId) ? {} : "skip")
 
   useEffect(() => {
-    if (!isAuthenticated || !userId || !isClerkLoaded) {
-      setSyncedUserId(null)
-      setSyncError(null)
-      return
-    }
-
-    if (syncedUserId === userId) {
+    if (!isAuthenticated || !userId || !isClerkLoaded || syncedUserId === userId) {
       return
     }
 
     let cancelled = false
 
-    setSyncError(null)
-
     upsertCurrentUser({})
       .then(() => {
         if (!cancelled) {
+          setSyncError(null)
           // Add a small delay to ensure the auth token is fully propagated
           // before firing the viewer query
           setTimeout(() => {
@@ -189,8 +277,21 @@ function AuthenticatedPlatformLayout({
     }
   }, [isAuthenticated, syncedUserId, upsertCurrentUser, userId, isClerkLoaded])
 
+  if (isClerkLoaded && !userId) {
+    return <PlatformShell displayName="Guest" canAccessAdmin={false}>{children}</PlatformShell>
+  }
+
+  const fallbackDisplayName =
+    user?.fullName ??
+    user?.primaryEmailAddress?.emailAddress ??
+    "Member"
+
+  if (isClerkLoaded && userId && !isLoading && !isAuthenticated) {
+    return <PlatformShell displayName={fallbackDisplayName} canAccessAdmin={false}>{children}</PlatformShell>
+  }
+
   if (syncError) {
-    return <PlatformLoadingShell message={syncError} />
+    return <PlatformShell displayName={fallbackDisplayName} canAccessAdmin={false}>{children}</PlatformShell>
   }
 
   if (isLoading || !isAuthenticated || syncedUserId !== userId || viewer === undefined) {
@@ -200,11 +301,9 @@ function AuthenticatedPlatformLayout({
   // viewer can be null if user doesn't exist yet, but that's OK after upsert succeeds
   const displayName =
     viewer?.name ??
-    user?.fullName ??
-    user?.primaryEmailAddress?.emailAddress ??
-    "Member"
+    fallbackDisplayName
 
-  return <PlatformShell displayName={displayName}>{children}</PlatformShell>
+  return <PlatformShell displayName={displayName} canAccessAdmin={Boolean(viewer?.isMaintainer)}>{children}</PlatformShell>
 }
 
 export default function PlatformLayout({
@@ -213,7 +312,7 @@ export default function PlatformLayout({
   children: React.ReactNode
 }>) {
   if (!authEnabled) {
-    return <PlatformShell displayName="Guest">{children}</PlatformShell>
+    return <PlatformShell displayName="Guest" canAccessAdmin={false}>{children}</PlatformShell>
   }
 
   return <AuthenticatedPlatformLayout>{children}</AuthenticatedPlatformLayout>

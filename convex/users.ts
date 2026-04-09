@@ -1,33 +1,22 @@
-import type { QueryCtx, MutationCtx } from "./_generated/server";
+import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { requireAdmin, requireIdentity, requireViewer, roleValidator } from "./lib/auth";
 
-function getDisplayName(identity: Awaited<ReturnType<QueryCtx["auth"]["getUserIdentity"]>>) {
-  if (!identity) {
-    return null;
-  }
-
+function getDisplayName(identity: Awaited<ReturnType<typeof requireIdentity>>) {
   return identity.name ?? identity.preferredUsername ?? identity.nickname ?? null;
-}
-
-async function requireIdentity(ctx: QueryCtx | MutationCtx) {
-  const identity = await ctx.auth.getUserIdentity();
-
-  if (!identity) {
-    throw new Error("Not authenticated");
-  }
-
-  return identity;
 }
 
 export const viewer = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await requireIdentity(ctx);
+    const viewer = await requireViewer(ctx);
 
-    return await ctx.db
-      .query("users")
-      .withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", identity.tokenIdentifier))
-      .unique();
+    return {
+      ...viewer.user,
+      role: viewer.role,
+      isAdmin: viewer.isAdmin,
+      isMaintainer: viewer.isMaintainer,
+    };
   },
 });
 
@@ -56,9 +45,22 @@ export const upsertCurrentUser = mutation({
       tokenIdentifier: identity.tokenIdentifier,
       onboardingCompleted: false,
       onboardingInterests: [],
+      role: "student",
       ...profile,
     });
 
     return await ctx.db.get(userId);
+  },
+});
+
+export const setUserRole = mutation({
+  args: {
+    userId: v.id("users"),
+    role: roleValidator,
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    await ctx.db.patch(args.userId, { role: args.role });
+    return await ctx.db.get(args.userId);
   },
 });
