@@ -131,9 +131,11 @@ export default defineSchema({
     muxUploadId: v.union(v.string(), v.null()),
     muxAssetId: v.union(v.string(), v.null()),
     muxPlaybackId: v.union(v.string(), v.null()),
+    muxPlaybackPolicy: v.optional(v.union(v.literal("signed"), v.literal("public"))),
     muxStatus: muxStatusValidator,
     durationSeconds: v.union(v.number(), v.null()),
     transcriptStatus: transcriptStatusValidator,
+    transcriptTrackId: v.optional(v.union(v.string(), v.null())),
   })
     .index("by_courseId_and_position", ["courseId", "position"])
     .index("by_chapterId_and_position", ["chapterId", "position"])

@@ -7,7 +7,7 @@ const http = httpRouter();
 async function verifyMuxSignature(signatureHeader: string | null, body: string) {
   const secret = process.env.MUX_WEBHOOK_SECRET;
   if (!secret) {
-    return true;
+    return false;
   }
   if (!signatureHeader) {
     return false;

@@ -70,6 +70,21 @@ async function createDefaultChapter(ctx: any, courseId: Id<"courses">) {
   });
 }
 
+async function processQueryInBatches<T>(fetchBatch: () => Promise<T[]>, pageSize: number, processItem: (item: T) => Promise<void>) {
+  while (true) {
+    const batch = await fetchBatch();
+    if (batch.length === 0) {
+      break;
+    }
+    for (const item of batch) {
+      await processItem(item);
+    }
+    if (batch.length < pageSize) {
+      break;
+    }
+  }
+}
+
 async function syncCourseCounts(ctx: any, courseId: Id<"courses">) {
   const [chapters, lessons] = await Promise.all([
     ctx.db.query("courseChapters").withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", courseId)).take(100),
@@ -320,45 +335,64 @@ export const updateCourse = mutation({
 });
 
 async function deleteCourseCascade(ctx: any, courseId: Id<"courses">) {
-  const lessons = await ctx.db
-    .query("courseLessons")
-    .withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", courseId))
-    .take(500);
+  await processQueryInBatches(
+    () =>
+      ctx.db
+        .query("courseLessons")
+        .withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", courseId))
+        .take(500),
+    500,
+    async (lesson: any) => {
+      await processQueryInBatches(
+        () =>
+          ctx.db
+            .query("lessonResources")
+            .withIndex("by_lessonId_and_position", (q: any) => q.eq("lessonId", lesson._id))
+            .take(100),
+        100,
+        async (resource: any) => {
+          await ctx.db.delete(resource._id);
+        },
+      );
+      await ctx.db.delete(lesson._id);
+    },
+  );
 
-  for (const lesson of lessons) {
-    const resources = await ctx.db
-      .query("lessonResources")
-      .withIndex("by_lessonId_and_position", (q: any) => q.eq("lessonId", lesson._id))
-      .take(100);
-    for (const resource of resources) {
-      await ctx.db.delete(resource._id);
-    }
-    await ctx.db.delete(lesson._id);
-  }
+  await processQueryInBatches(
+    () =>
+      ctx.db
+        .query("courseChapters")
+        .withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", courseId))
+        .take(100),
+    100,
+    async (chapter: any) => {
+      await ctx.db.delete(chapter._id);
+    },
+  );
 
-  const chapters = await ctx.db
-    .query("courseChapters")
-    .withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", courseId))
-    .take(100);
-  for (const chapter of chapters) {
-    await ctx.db.delete(chapter._id);
-  }
+  await processQueryInBatches(
+    () =>
+      ctx.db
+        .query("courseAccess")
+        .withIndex("by_courseId_and_accessType", (q: any) => q.eq("courseId", courseId))
+        .take(100),
+    100,
+    async (row: any) => {
+      await ctx.db.delete(row._id);
+    },
+  );
 
-  const accessRows = await ctx.db
-    .query("courseAccess")
-    .withIndex("by_courseId_and_accessType", (q: any) => q.eq("courseId", courseId))
-    .take(100);
-  for (const row of accessRows) {
-    await ctx.db.delete(row._id);
-  }
-
-  const progressRows = await ctx.db
-    .query("lessonProgress")
-    .withIndex("by_courseId_and_userId", (q: any) => q.eq("courseId", courseId))
-    .take(500);
-  for (const row of progressRows) {
-    await ctx.db.delete(row._id);
-  }
+  await processQueryInBatches(
+    () =>
+      ctx.db
+        .query("lessonProgress")
+        .withIndex("by_courseId_and_userId", (q: any) => q.eq("courseId", courseId))
+        .take(500),
+    500,
+    async (row: any) => {
+      await ctx.db.delete(row._id);
+    },
+  );
 
   await ctx.db.delete(courseId);
 }
@@ -475,10 +509,13 @@ export const deleteChapter = mutation({
       throw new Error("The default chapter can't be deleted.");
     }
 
-    const lessons = await ctx.db.query("courseLessons").withIndex("by_chapterId_and_position", (q) => q.eq("chapterId", chapter._id)).take(200);
-    for (const lesson of lessons) {
-      await ctx.db.patch(lesson._id, { chapterId: course.defaultChapterId! });
-    }
+    await processQueryInBatches(
+      () => ctx.db.query("courseLessons").withIndex("by_chapterId_and_position", (q) => q.eq("chapterId", chapter._id)).take(200),
+      200,
+      async (lesson: any) => {
+        await ctx.db.patch(lesson._id, { chapterId: course.defaultChapterId! });
+      },
+    );
 
     await ctx.db.delete(chapter._id);
     await syncCourseCounts(ctx, course._id);
@@ -493,8 +530,19 @@ export const reorderChapters = mutation({
   },
   handler: async (ctx, args) => {
     await assertCanManageCourse(ctx, args.courseId);
-    for (let index = 0; index < args.chapterIds.length; index += 1) {
-      await ctx.db.patch(args.chapterIds[index], { position: index });
+    const chapters = await Promise.all(args.chapterIds.map((chapterId) => ctx.db.get(chapterId)));
+    const validatedChapters = [];
+    for (const chapter of chapters) {
+      if (!chapter) {
+        throw new Error("Chapter not found");
+      }
+      if (chapter.courseId !== args.courseId) {
+        throw new Error("One or more chapters do not belong to this course.");
+      }
+      validatedChapters.push(chapter);
+    }
+    for (let index = 0; index < validatedChapters.length; index += 1) {
+      await ctx.db.patch(validatedChapters[index]._id, { position: index });
     }
     return { success: true };
   },
@@ -595,10 +643,13 @@ export const deleteLesson = mutation({
     }
     await assertCanManageCourse(ctx, lesson.courseId);
 
-    const resources = await ctx.db.query("lessonResources").withIndex("by_lessonId_and_position", (q) => q.eq("lessonId", lesson._id)).take(100);
-    for (const resource of resources) {
-      await ctx.db.delete(resource._id);
-    }
+    await processQueryInBatches(
+      () => ctx.db.query("lessonResources").withIndex("by_lessonId_and_position", (q) => q.eq("lessonId", lesson._id)).take(100),
+      100,
+      async (resource: any) => {
+        await ctx.db.delete(resource._id);
+      },
+    );
     await ctx.db.delete(lesson._id);
     await syncCourseCounts(ctx, lesson.courseId);
     return { success: true };
@@ -612,8 +663,19 @@ export const reorderLessons = mutation({
   },
   handler: async (ctx, args) => {
     await assertCanManageCourse(ctx, args.courseId);
-    for (let index = 0; index < args.lessonIds.length; index += 1) {
-      await ctx.db.patch(args.lessonIds[index], { position: index });
+    const lessons = await Promise.all(args.lessonIds.map((lessonId) => ctx.db.get(lessonId)));
+    const validatedLessons = [];
+    for (const lesson of lessons) {
+      if (!lesson) {
+        throw new Error("Lesson not found");
+      }
+      if (lesson.courseId !== args.courseId) {
+        throw new Error("One or more lessons do not belong to this course.");
+      }
+      validatedLessons.push(lesson);
+    }
+    for (let index = 0; index < validatedLessons.length; index += 1) {
+      await ctx.db.patch(validatedLessons[index]._id, { position: index });
     }
     return { success: true };
   },
@@ -722,8 +784,19 @@ export const reorderLessonResources = mutation({
       throw new Error("Lesson not found");
     }
     await assertCanManageCourse(ctx, lesson.courseId);
-    for (let index = 0; index < args.resourceIds.length; index += 1) {
-      await ctx.db.patch(args.resourceIds[index], { position: index });
+    const resources = await Promise.all(args.resourceIds.map((resourceId) => ctx.db.get(resourceId)));
+    const validatedResources = [];
+    for (const resource of resources) {
+      if (!resource) {
+        throw new Error("Resource not found");
+      }
+      if (resource.lessonId !== args.lessonId) {
+        throw new Error("One or more resources do not belong to this lesson.");
+      }
+      validatedResources.push(resource);
+    }
+    for (let index = 0; index < validatedResources.length; index += 1) {
+      await ctx.db.patch(validatedResources[index]._id, { position: index });
     }
     return { success: true };
   },
