@@ -11,10 +11,13 @@
 import type * as admin from "../admin.js";
 import type * as adminMux from "../adminMux.js";
 import type * as courses from "../courses.js";
+import type * as crons from "../crons.js";
 import type * as http from "../http.js";
 import type * as httpHelpers from "../httpHelpers.js";
 import type * as lib_auth from "../lib/auth.js";
 import type * as lib_courseSeedData from "../lib/courseSeedData.js";
+import type * as muxSync from "../muxSync.js";
+import type * as muxWebhook from "../muxWebhook.js";
 import type * as progress from "../progress.js";
 import type * as seed from "../seed.js";
 import type * as users from "../users.js";
@@ -31,10 +34,13 @@ declare const fullApi: ApiFromModules<{
   admin: typeof admin;
   adminMux: typeof adminMux;
   courses: typeof courses;
+  crons: typeof crons;
   http: typeof http;
   httpHelpers: typeof httpHelpers;
   "lib/auth": typeof lib_auth;
   "lib/courseSeedData": typeof lib_courseSeedData;
+  muxSync: typeof muxSync;
+  muxWebhook: typeof muxWebhook;
   progress: typeof progress;
   seed: typeof seed;
   users: typeof users;

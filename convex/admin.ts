@@ -540,6 +540,7 @@ export const createLesson = mutation({
       muxPlaybackPolicy: undefined,
       muxStatus: "idle",
       durationSeconds: null,
+      transcriptTrackId: null,
       transcriptStatus: "none",
     });
 
@@ -807,6 +808,7 @@ export const updateMuxLessonStatus = internalMutation({
     muxPlaybackId: v.union(v.string(), v.null()),
     muxStatus: muxStatusValidator,
     durationSeconds: v.union(v.number(), v.null()),
+    transcriptTrackId: v.union(v.string(), v.null()),
     transcriptStatus: transcriptStatusValidator,
   },
   handler: async (ctx, args) => {
@@ -820,6 +822,7 @@ export const updateMuxLessonStatus = internalMutation({
       muxPlaybackId: args.muxPlaybackId,
       muxStatus: args.muxStatus,
       durationSeconds: args.durationSeconds,
+      transcriptTrackId: args.transcriptTrackId,
       transcriptStatus: args.transcriptStatus,
     });
 
@@ -856,5 +859,28 @@ export const grantCourseAccess = mutation({
       grantedAt: row.grantedAt ?? Date.now(),
     });
     return await ctx.db.get(row._id);
+  },
+});
+
+export const setLessonBodyFromGeneratedTranscriptIfEmpty = internalMutation({
+  args: {
+    lessonId: v.id("courseLessons"),
+    body: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const lesson = await ctx.db.get(args.lessonId);
+    if (!lesson) {
+      return { updated: false, reason: "lesson_not_found" as const };
+    }
+
+    if (lesson.body.trim().length > 0) {
+      return { updated: false, reason: "body_already_present" as const };
+    }
+
+    await ctx.db.patch(args.lessonId, {
+      body: args.body,
+    });
+
+    return { updated: true as const };
   },
 });

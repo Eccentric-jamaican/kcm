@@ -17,6 +17,12 @@ type MuxAssetResponse = {
     status?: string;
     duration?: number;
     playback_ids?: Array<{ id: string }>;
+    tracks?: Array<{
+      id?: string;
+      type?: string;
+      text_source?: string;
+      status?: string;
+    }>;
   };
 };
 
@@ -55,6 +61,16 @@ export const createMuxDirectUpload = action({
         cors_origin: args.corsOrigin,
         new_asset_settings: {
           playback_policy: ["signed"],
+          inputs: [
+            {
+              generated_subtitles: [
+                {
+                  language_code: "en",
+                  name: "English CC",
+                },
+              ],
+            },
+          ],
         },
       }),
     });
@@ -108,8 +124,22 @@ export const refreshMuxAsset = action({
     const payload = (await response.json()) as MuxAssetResponse;
     const status = payload.data?.status;
     const playbackId = payload.data?.playback_ids?.[0]?.id ?? null;
+    const generatedTrack = payload.data?.tracks?.find(
+      (track) => track.type === "text" && track.text_source === "generated_vod",
+    );
+    const generatedTrackStatus = generatedTrack?.status;
     const mappedStatus =
       status === "ready" ? "ready" : status === "errored" ? "errored" : "processing";
+    const transcriptStatus =
+      generatedTrackStatus === "ready"
+        ? "ready"
+        : generatedTrackStatus === "errored"
+          ? "errored"
+          : mappedStatus === "errored"
+            ? "errored"
+            : generatedTrack
+              ? "processing"
+              : "none";
 
     await ctx.runMutation(internal.admin.updateMuxLessonStatus, {
       lessonId: args.lessonId,
@@ -117,7 +147,8 @@ export const refreshMuxAsset = action({
       muxPlaybackId: playbackId,
       muxStatus: mappedStatus,
       durationSeconds: payload.data?.duration ? Math.round(payload.data.duration) : null,
-      transcriptStatus: mappedStatus === "ready" ? "ready" : mappedStatus === "errored" ? "errored" : "processing",
+      transcriptTrackId: generatedTrack?.id ?? lessonEditor.lesson.transcriptTrackId ?? null,
+      transcriptStatus,
     });
 
     return {

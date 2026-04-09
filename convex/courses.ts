@@ -295,3 +295,15 @@ export const getCourseNavigation = query({
     };
   },
 });
+
+export const listLessonsByMuxAssetId = internalQuery({
+  args: {
+    muxAssetId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("courseLessons")
+      .withIndex("by_muxAssetId", (q) => q.eq("muxAssetId", args.muxAssetId))
+      .take(50);
+  },
+});

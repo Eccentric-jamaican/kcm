@@ -2,13 +2,12 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { useMutation, useQuery } from "convex/react"
+import { api } from "@/lib/convex-api"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
 } from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 
@@ -72,21 +71,18 @@ export function CourseLessonSidebar({
   currentLessonId: string
   lessons: LessonNavItem[]
 }) {
-  const [collapsed, setCollapsed] = useState(false)
-  const [autoplay, setAutoplay] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false
+    return window.localStorage.getItem("courseLessonSidebarCollapsed") === "true"
+  })
+  const [localAutoplay, setLocalAutoplay] = useState(() => {
+    if (typeof window === "undefined") return false
+    return window.localStorage.getItem("courseLessonAutoplay") === "true"
+  })
   const [mobileOpen, setMobileOpen] = useState(false)
-
-  useEffect(() => {
-    const savedCollapsed = window.localStorage.getItem("courseLessonSidebarCollapsed")
-    const savedAutoplay = window.localStorage.getItem("courseLessonAutoplay")
-
-    if (savedCollapsed) {
-      setCollapsed(savedCollapsed === "true")
-    }
-    if (savedAutoplay) {
-      setAutoplay(savedAutoplay === "true")
-    }
-  }, [])
+  const playbackPreferences = useQuery(api.progress.getUserPlaybackPreferences)
+  const setUserPlaybackPreferences = useMutation(api.progress.setUserPlaybackPreferences)
+  const autoplay = playbackPreferences?.autoplayNextLesson ?? localAutoplay
 
   useEffect(() => {
     window.localStorage.setItem("courseLessonSidebarCollapsed", String(collapsed))
@@ -95,6 +91,16 @@ export function CourseLessonSidebar({
   useEffect(() => {
     window.localStorage.setItem("courseLessonAutoplay", String(autoplay))
   }, [autoplay])
+
+  async function handleAutoplayChange(nextValue: boolean) {
+    const previousValue = autoplay
+    setLocalAutoplay(nextValue)
+    try {
+      await setUserPlaybackPreferences({ autoplayNextLesson: nextValue })
+    } catch {
+      setLocalAutoplay(previousValue)
+    }
+  }
 
   return (
     <>
@@ -128,7 +134,7 @@ export function CourseLessonSidebar({
                     {courseTitle}
                   </Link>
                   <div className="mt-2 flex items-center gap-2">
-                    <Switch checked={autoplay} onCheckedChange={setAutoplay} />
+                    <Switch checked={autoplay} onCheckedChange={handleAutoplayChange} />
                     <p className="text-sm font-medium">Autoplay</p>
                   </div>
                 </div>
@@ -169,7 +175,7 @@ export function CourseLessonSidebar({
                       {courseTitle}
                     </Link>
                     <div className="mt-2 flex items-center gap-2">
-                      <Switch checked={autoplay} onCheckedChange={setAutoplay} />
+                      <Switch checked={autoplay} onCheckedChange={handleAutoplayChange} />
                       <p className="text-sm font-medium">Autoplay</p>
                     </div>
                   </div>

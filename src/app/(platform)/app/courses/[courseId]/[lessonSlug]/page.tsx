@@ -6,6 +6,7 @@ import { ensureConvexViewer, getConvexServerToken } from "@/lib/convex-server"
 import { parseCourseBody } from "@/lib/course-body"
 import { isForbiddenError, isNotAuthenticatedError } from "@/lib/convex-route-errors"
 import { PrivateMuxPlayer } from "@/components/video/private-mux-player"
+import { LessonTranscript } from "../../../components/lesson-transcript"
 import { CourseLessonSidebar } from "../../../components/course-lesson-sidebar"
 import { CourseWorkspaceHeader } from "../../../components/course-workspace-header"
 import { LessonProgressToggle } from "../../../components/lesson-progress-toggle"
@@ -67,12 +68,19 @@ export default async function LessonPage({
         <section className="flex flex-1 flex-col min-w-0">
           <CourseWorkspaceHeader />
 
-          <section className="dark relative">
+          <section id="lesson-video-player" className="dark relative bg-black">
             {data.lesson.muxPlaybackId ? (
               <PrivateMuxPlayer
+                courseId={data.course._id}
                 lessonId={data.lesson._id}
                 playbackId={data.lesson.muxPlaybackId}
                 playbackPolicy={data.lesson.muxPlaybackPolicy ?? null}
+                durationSeconds={data.lesson.durationSeconds ?? null}
+                nextLessonHref={
+                  data.navigation.nextLesson
+                    ? `/app/courses/${data.course.slug}/${data.navigation.nextLesson.slug}`
+                    : null
+                }
                 posterUrl={data.course.coverImageUrl}
               />
             ) : lessonUrl ? (
@@ -80,7 +88,7 @@ export default async function LessonPage({
                 controls
                 preload="metadata"
                 poster={data.course.coverImageUrl ?? undefined}
-                className="aspect-video h-full w-full object-cover"
+                className="mx-auto aspect-video h-full w-full object-contain lg:max-h-[75vh]"
                 src={lessonUrl}
               />
             ) : data.lesson.muxStatus === "processing" || data.lesson.muxStatus === "uploading" ? (
@@ -88,7 +96,7 @@ export default async function LessonPage({
                 This lesson video is still processing in Mux.
               </div>
             ) : data.course.coverImageUrl ? (
-              <img src={data.course.coverImageUrl} alt={data.lesson.title} className="aspect-video h-full w-full object-cover" />
+              <img src={data.course.coverImageUrl} alt={data.lesson.title} className="mx-auto aspect-video h-full w-full object-contain lg:max-h-[75vh]" />
             ) : (
               <div className="aspect-video h-full w-full" />
             )}
@@ -139,20 +147,12 @@ export default async function LessonPage({
               </div>
 
               <div className="space-y-5">
-                {blocks.map((block, index) =>
-                  block.type === "timestamp" ? (
-                    <div key={`${block.time}-${index}`} className="grid gap-4 md:grid-cols-[80px_1fr]">
-                      <button className="h-fit w-fit rounded-full border px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground">
-                        {block.time}
-                      </button>
-                      <p className="text-base leading-7 text-muted-foreground">{block.text}</p>
-                    </div>
-                  ) : (
-                    <p key={index} className="text-base leading-7 text-muted-foreground">
-                      {block.text}
-                    </p>
-                  ),
-                )}
+                <LessonTranscript
+                  lessonId={data.lesson._id}
+                  transcriptStatus={data.lesson.transcriptStatus}
+                  transcriptTrackId={data.lesson.transcriptTrackId}
+                  fallbackBlocks={blocks}
+                />
               </div>
 
               {data.navigation.nextLesson ? (
