@@ -86,38 +86,19 @@ async function processQueryInBatches<T>(fetchBatch: () => Promise<T[]>, pageSize
 }
 
 async function syncCourseCounts(ctx: any, courseId: Id<"courses">) {
-  let chapterCount = 0;
-  let lessonCount = 0;
+  const chapters = await ctx.db
+    .query("courseChapters")
+    .withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", courseId))
+    .collect();
 
-  // Count chapters in batches
-  await processQueryInBatches(
-    () =>
-      ctx.db
-        .query("courseChapters")
-        .withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", courseId))
-        .take(500),
-    500,
-    async () => {
-      chapterCount += 1;
-    },
-  );
-
-  // Count lessons in batches
-  await processQueryInBatches(
-    () =>
-      ctx.db
-        .query("courseLessons")
-        .withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", courseId))
-        .take(500),
-    500,
-    async () => {
-      lessonCount += 1;
-    },
-  );
+  const lessons = await ctx.db
+    .query("courseLessons")
+    .withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", courseId))
+    .collect();
 
   await ctx.db.patch(courseId, {
-    chapterCount,
-    lessonCount,
+    chapterCount: chapters.length,
+    lessonCount: lessons.length,
   });
 }
 
@@ -160,7 +141,7 @@ export const getDashboardStats = query({
     const allCourses = viewer.isAdmin
       ? await Promise.all(
           ["draft", "published", "archived"].map((status) =>
-            ctx.db.query("courses").withIndex("by_status", (q) => q.eq("status", status as any)).take(100),
+            ctx.db.query("courses").withIndex("by_status", (q) => q.eq("status", status as any)).collect(),
           ),
         ).then((parts) => parts.flat())
       : await Promise.all(
@@ -168,13 +149,13 @@ export const getDashboardStats = query({
             ctx.db
               .query("courses")
               .withIndex("by_maintainerUserId_and_status", (q) => q.eq("maintainerUserId", viewer.user._id).eq("status", status as any))
-              .take(100),
+              .collect(),
           ),
         ).then((parts) => parts.flat());
 
     const lessons = await Promise.all(
       allCourses.map((course) =>
-        ctx.db.query("courseLessons").withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", course._id)).take(100),
+        ctx.db.query("courseLessons").withIndex("by_courseId_and_position", (q: any) => q.eq("courseId", course._id)).collect(),
       ),
     ).then((parts) => parts.flat());
 
@@ -202,7 +183,7 @@ export const listCourses = query({
     const allCourses = viewer.isAdmin
       ? await Promise.all(
           (args.status ? [args.status] : ["draft", "published", "archived"]).map((status) =>
-            ctx.db.query("courses").withIndex("by_status", (q) => q.eq("status", status as any)).take(100),
+            ctx.db.query("courses").withIndex("by_status", (q) => q.eq("status", status as any)).collect(),
           ),
         ).then((parts) => parts.flat())
       : await Promise.all(
@@ -210,7 +191,7 @@ export const listCourses = query({
             ctx.db
               .query("courses")
               .withIndex("by_maintainerUserId_and_status", (q) => q.eq("maintainerUserId", viewer.user._id).eq("status", status as any))
-              .take(100),
+              .collect(),
           ),
         ).then((parts) => parts.flat());
 
@@ -913,7 +894,7 @@ export const updateMuxLessonStatus = internalMutation({
     muxPlaybackId: v.union(v.string(), v.null()),
     muxStatus: muxStatusValidator,
     durationSeconds: v.union(v.number(), v.null()),
-    transcriptStatus: transcriptStatusValidator,
+    transcriptStatus: v.optional(transcriptStatusValidator),
   },
   handler: async (ctx, args) => {
     const lesson = await ctx.db.get(args.lessonId);
@@ -921,13 +902,16 @@ export const updateMuxLessonStatus = internalMutation({
       return null;
     }
 
-    await ctx.db.patch(args.lessonId, {
+    const patch: Record<string, any> = {
       muxAssetId: args.muxAssetId,
       muxPlaybackId: args.muxPlaybackId,
       muxStatus: args.muxStatus,
       durationSeconds: args.durationSeconds,
-      transcriptStatus: args.transcriptStatus,
-    });
+    };
+    if (args.transcriptStatus !== undefined) {
+      patch.transcriptStatus = args.transcriptStatus;
+    }
+    await ctx.db.patch(args.lessonId, patch);
 
     const resources = await ctx.db.query("lessonResources").withIndex("by_lessonId_and_position", (q) => q.eq("lessonId", args.lessonId)).take(50);
     const existingVideo = resources.find((resource) => resource.type === "video");
@@ -949,18 +933,33 @@ export const grantCourseAccess = mutation({
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    await ensureOwnerAccess(ctx, args.courseId, args.userId);
-    const row = await ctx.db
+
+    // Check for existing access row first
+    let row = await ctx.db
       .query("courseAccess")
       .withIndex("by_userId_and_courseId", (q) => q.eq("userId", args.userId).eq("courseId", args.courseId))
       .unique();
+
     if (!row) {
-      return null;
+      // No row exists — create via ensureOwnerAccess, then re-fetch
+      await ensureOwnerAccess(ctx, args.courseId, args.userId);
+      row = await ctx.db
+        .query("courseAccess")
+        .withIndex("by_userId_and_courseId", (q) => q.eq("userId", args.userId).eq("courseId", args.courseId))
+        .unique();
+      if (!row) {
+        return null;
+      }
     }
-    await ctx.db.patch(row._id, {
-      accessType: args.accessType,
-      grantedAt: row.grantedAt ?? Date.now(),
-    });
+
+    // Only patch if the access type actually differs
+    if (row.accessType !== args.accessType) {
+      await ctx.db.patch(row._id, {
+        accessType: args.accessType,
+        grantedAt: row.grantedAt ?? Date.now(),
+      });
+    }
+
     return await ctx.db.get(row._id);
   },
 });

@@ -98,8 +98,9 @@ http.route({
           ? "errored"
           : "processing";
 
-    // Determine transcript status based on track events, not asset status
-    let transcriptStatus: "none" | "processing" | "ready" | "errored" = "processing";
+    // Only set transcriptStatus for explicit track events; leave it
+    // undefined for asset-level events so we don't regress an existing value.
+    let transcriptStatus: "none" | "processing" | "ready" | "errored" | undefined;
     if (payload.type === "video.asset.track.ready") {
       const track = payload.data?.tracks?.[0];
       if (track?.text_source === "generated_vod") {
@@ -118,7 +119,7 @@ http.route({
       muxPlaybackId: playbackId,
       muxStatus,
       durationSeconds: payload.data?.duration ? Math.round(payload.data.duration) : null,
-      transcriptStatus,
+      ...(transcriptStatus !== undefined ? { transcriptStatus } : {}),
     });
 
     return new Response("ok", { status: 200 });
