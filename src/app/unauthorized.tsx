@@ -2,7 +2,7 @@ import Link from "next/link"
 
 export default function UnauthorizedPage() {
   return (
-    <main className="min-h-screen bg-[#f2f2f4] px-6 py-20">
+    <main className="min-h-screen bg-background px-6 py-20">
       <div className="mx-auto max-w-3xl rounded-[2rem] border bg-background p-8 shadow-sm sm:p-10">
         <p className="text-xs font-semibold tracking-[0.24em] text-muted-foreground">401 UNAUTHORIZED</p>
         <h1 className="mt-4 max-w-2xl text-4xl font-semibold tracking-tight sm:text-5xl">

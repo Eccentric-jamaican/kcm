@@ -139,8 +139,8 @@ export function AdminShell({
         </SidebarFooter>
       </Sidebar>
 
-      <SidebarInset className="bg-[#f2f2f4]">
-        <div className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-[#f2f2f4]/90 px-4 backdrop-blur sm:px-6 md:hidden">
+      <SidebarInset className="bg-background">
+        <div className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/90 px-4 backdrop-blur sm:px-6 md:hidden">
           <div>
             <p className="text-sm font-semibold">Maintainer Admin</p>
             <p className="text-xs text-muted-foreground">Course operations</p>
