@@ -51,7 +51,7 @@ export default async function LessonPage({
   const flatLessons = data.chapters.flatMap((chapter) => chapter.lessons)
 
   return (
-    <main className="min-h-screen bg-background">
+    <div className="relative flex min-h-screen">
       {/* Sidebar - includes mobile floating button and desktop sidebar */}
       <CourseLessonSidebar
         courseSlug={data.course.slug}
@@ -60,14 +60,12 @@ export default async function LessonPage({
         currentLessonId={data.lesson._id}
         lessons={flatLessons}
       />
-      
-      <div className="flex w-full items-stretch">
-        {/* Desktop sidebar spacer */}
-        <div className="hidden w-[320px] shrink-0 lg:block" />
 
-        <section className="flex flex-1 flex-col min-w-0">
+      <main className="flex-1 transition-all duration-200 lg:ml-[var(--sidebar-width,320px)]">
+        <section className="flex flex-col min-w-0">
           <CourseWorkspaceHeader />
 
+          {/* Video Section */}
           <section id="lesson-video-player" className="dark relative bg-black">
             {data.lesson.muxPlaybackId ? (
               <PrivateMuxPlayer
@@ -103,7 +101,7 @@ export default async function LessonPage({
           </section>
 
           {/* Action bar */}
-          <div className="flex items-center justify-between bg-card px-6 py-3 mb-8">
+          <div className="flex items-center justify-between border-b bg-card px-6 h-12">
             <div>
               {data.lesson.githubUrl ? (
                 <Link
@@ -112,26 +110,27 @@ export default async function LessonPage({
                   rel="noreferrer"
                   className="flex items-center gap-2 text-sm font-medium text-foreground transition-colors hover:text-foreground/80"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                  </svg>
                   <span>Source Code</span>
                 </Link>
               ) : null}
             </div>
 
-            <div className="flex items-center">
-              <div className="px-4">
-                <LessonProgressToggle courseId={data.course._id} lessonId={data.lesson._id} completed={Boolean(data.progress?.completed)} />
-              </div>
+            <div className="flex items-center gap-4">
+              <LessonProgressToggle courseId={data.course._id} lessonId={data.lesson._id} completed={Boolean(data.progress?.completed)} />
               {data.navigation.nextLesson ? (
                 <Link
                   href={`/app/courses/${data.course.slug}/${data.navigation.nextLesson.slug}`}
-                  className="inline-flex items-center gap-2 bg-muted/50 px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-foreground transition-colors hover:text-foreground/80"
                 >
                   <span>Next</span>
                   <span aria-hidden="true">→</span>
                 </Link>
               ) : (
-                <span className="inline-flex items-center gap-2 bg-muted/50 px-3 py-2 text-sm font-medium text-foreground/40">
+                <span className="inline-flex items-center gap-2 text-sm font-medium text-foreground/40">
                   <span>Next</span>
                   <span aria-hidden="true">→</span>
                 </span>
@@ -141,9 +140,9 @@ export default async function LessonPage({
 
           {/* Main content */}
           <div className="flex-1">
-            <div className="mx-auto w-full max-w-3xl px-6 pb-8 space-y-8">
+            <div className="mx-auto w-full max-w-3xl px-6 py-8 space-y-8">
               <div>
-                <h1 className="text-4xl font-semibold tracking-tight text-foreground">{data.lesson.title}</h1>
+                <h1 className="text-3xl font-semibold tracking-tight text-foreground">{data.lesson.title}</h1>
               </div>
 
               <div className="space-y-5">
@@ -157,8 +156,8 @@ export default async function LessonPage({
 
               {data.navigation.nextLesson ? (
                 <nav className="pt-8">
-                  <p className="text-xs font-semibold tracking-[0.24em] text-muted-foreground">UP NEXT</p>
-                  <Link href={`/app/courses/${data.course.slug}/${data.navigation.nextLesson.slug}`} className="mt-3 flex items-center justify-between gap-4 rounded-xl border bg-background p-4 transition-colors hover:bg-muted">
+                  <p className="text-xs font-semibold tracking-[0.24em] text-muted-foreground uppercase">Up Next</p>
+                  <Link href={`/app/courses/${data.course.slug}/${data.navigation.nextLesson.slug}`} className="mt-3 flex items-center justify-between gap-4 rounded-xl border bg-card p-4 transition-colors hover:bg-muted">
                     <div>
                       <p className="text-base font-semibold">{data.navigation.nextLesson.title}</p>
                       <p className="mt-1 text-sm text-muted-foreground">Continue through the course sequence.</p>
@@ -170,7 +169,7 @@ export default async function LessonPage({
             </div>
           </div>
         </section>
-      </div>
-    </main>
+      </main>
+    </div>
   )
 }

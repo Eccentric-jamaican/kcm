@@ -4,6 +4,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+:root {
+  --sidebar-width: 320px;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
