@@ -12,10 +12,13 @@ const TrendingUpIcon = () => (
   </svg>
 );
 
-// Instagram post IDs from URLs
-// Get these from: https://www.instagram.com/p/POST_ID/
+// Instagram post/reel IDs from URLs
+// Posts: https://www.instagram.com/p/POST_ID/
+// Reels: https://www.instagram.com/reel/REEL_ID/
 const instagramPosts = [
-  { id: "DVkeMhbl9np", caption: "Trade result" },
+  { id: "DVkeMhbl9np", caption: "Trade result 1" },
+  { id: "DWCZ_EZisEU", caption: "Trade result 2" },
+  { id: "DUDX512lUAn", caption: "Trade result 3" },
 ];
 
 function InstagramEmbed({ postId }: { postId: string }) {
