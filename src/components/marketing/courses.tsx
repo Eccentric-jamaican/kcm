@@ -24,9 +24,9 @@ type InstagramPost = {
 // Post format: https://www.instagram.com/p/POST_ID/
 // Reel format: https://www.instagram.com/reel/REEL_ID/
 const instagramPosts: InstagramPost[] = [
-  { id: "DVkeMhbl9np", type: "reel", caption: "Trade result 1" },
+  { id: "DVkeMhbl9np", type: "p", caption: "Trade result 1" },
   { id: "DWCZ_EZisEU", type: "reel", caption: "Trade result 2" },
-  { id: "DUDX512lUAn", type: "reel", caption: "Trade result 3" },
+  { id: "DUDX512lUAn", type: "p", caption: "Trade result 3" },
 ];
 
 function InstagramEmbed({ post }: { post: InstagramPost }) {
