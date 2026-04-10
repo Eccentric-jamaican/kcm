@@ -42,19 +42,19 @@ export function DashboardHero() {
       </div>
 
       {/* Webinars Promo Card */}
-      <div className="mx-auto mt-6 max-w-6xl rounded-xl border bg-card p-6 shadow-sm">
+      <div className="mx-auto mt-6 max-w-6xl rounded-xl border bg-card p-5 shadow-sm">
         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <div className="space-y-1">
-            <h2 className="text-xl font-semibold tracking-tight">
+            <h2 className="text-lg font-semibold tracking-tight">
               Missed a live session?
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Watch recordings of past webinars covering market analysis, strategy sessions, and Q&As.
             </p>
           </div>
           <Link
             href="/app/webinars"
-            className="inline-flex items-center gap-2 rounded-xl bg-bull px-5 py-3 text-base font-medium text-bull-foreground shadow-sm shadow-bull/20 transition-all hover:bg-bull/90 hover:shadow-bull/30"
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-bull px-4 py-2.5 text-sm font-medium text-bull-foreground shadow-sm shadow-bull/20 transition-all hover:bg-bull/90 hover:shadow-bull/30"
           >
             Watch Past Webinars
             <span aria-hidden>›</span>

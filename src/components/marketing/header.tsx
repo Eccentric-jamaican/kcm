@@ -90,12 +90,16 @@ export function MarketingHeader() {
               ))}
             </nav>
             <div className="mt-4 flex flex-col gap-2 border-t border-border/50 pt-4">
-              <Button variant="outline" className="w-full justify-center">
-                <Link href="/sign-in?redirect_url=/app">Log in</Link>
-              </Button>
-              <Button className="w-full justify-center bg-bull text-bull-foreground">
-                <Link href="/find-my-classes?np=t">Get Started</Link>
-              </Button>
+              <Link href="/sign-in?redirect_url=/app" className="w-full">
+                <Button variant="outline" className="w-full justify-center">
+                  Log in
+                </Button>
+              </Link>
+              <Link href="/find-my-classes?np=t" className="w-full">
+                <Button className="w-full justify-center bg-bull text-bull-foreground">
+                  Get Started
+                </Button>
+              </Link>
             </div>
           </div>
         )}
