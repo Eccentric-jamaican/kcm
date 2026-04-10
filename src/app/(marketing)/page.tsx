@@ -3,7 +3,7 @@ import {
   HeroSection,
   FeaturesSection,
   MentorSection,
-  TestimonialsSection,
+  TestimonialsMarqueeSection,
   CoursesSection,
   CTASection,
   MarketingFooter,
@@ -17,7 +17,7 @@ export default function MarketingPage() {
         <HeroSection />
         <FeaturesSection />
         <MentorSection />
-        <TestimonialsSection />
+        <TestimonialsMarqueeSection />
         <CoursesSection />
         <CTASection />
       </main>

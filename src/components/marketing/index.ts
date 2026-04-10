@@ -3,6 +3,7 @@ export { HeroSection } from "./hero";
 export { FeaturesSection } from "./features";
 export { MentorSection } from "./mentor";
 export { TestimonialsSection } from "./testimonials";
+export { TestimonialsMarqueeSection } from "./testimonials-marquee";
 export { CoursesSection } from "./courses";
 export { CTASection } from "./cta";
 export { MarketingFooter } from "./footer";
