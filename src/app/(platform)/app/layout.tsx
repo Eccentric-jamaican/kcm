@@ -17,6 +17,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { SearchIcon } from "@hugeicons/core-free-icons"
 import { api } from "../../../../convex/_generated/api"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 const authEnabled = Boolean(
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.NEXT_PUBLIC_CONVEX_URL
@@ -117,9 +118,12 @@ function PlatformHeader({
             </Link>
           ) : null}
 
-          <div className="inline-flex items-center gap-3 rounded-full px-1 py-1">
-            <span className="hidden text-sm font-medium sm:inline">{displayName}</span>
-            <UserButton />
+          <div className="inline-flex items-center gap-4">
+            <ThemeToggle />
+            <div className="inline-flex items-center gap-3 rounded-full px-1 py-1">
+              <span className="hidden text-sm font-medium sm:inline">{displayName}</span>
+              <UserButton />
+            </div>
           </div>
         </div>
 
@@ -197,7 +201,7 @@ function PlatformHeader({
 
 function PlatformLoadingShell({ message }: { message: string }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f2f2f4] px-6">
+    <div className="flex min-h-screen items-center justify-center bg-background px-6">
       <div className="flex items-center gap-3 rounded-xl border bg-card px-5 py-4 text-sm text-muted-foreground shadow-sm">
         <Spinner className="size-4" />
         <span>{message}</span>
@@ -220,11 +224,11 @@ function PlatformShell({
   const isCourseLesson = /^\/app\/courses\/[^/]+\/[^/]+$/.test(pathname)
 
   if (isAdmin || isCourseLesson) {
-    return <div className="min-h-screen bg-[#f2f2f4]">{children}</div>
+    return <div className="min-h-screen bg-background">{children}</div>
   }
 
   return (
-    <div className="min-h-screen bg-[#f2f2f4]">
+    <div className="min-h-screen bg-background">
       <PlatformHeader displayName={displayName} canAccessAdmin={canAccessAdmin} />
       <div className="mx-auto w-full max-w-[1400px]">{children}</div>
     </div>
