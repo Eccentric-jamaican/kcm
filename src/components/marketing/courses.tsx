@@ -12,18 +12,26 @@ const TrendingUpIcon = () => (
   </svg>
 );
 
-// Instagram post/reel IDs from URLs
-// Posts: https://www.instagram.com/p/POST_ID/
-// Reels: https://www.instagram.com/reel/REEL_ID/
-const instagramPosts = [
-  { id: "DVkeMhbl9np", caption: "Trade result 1" },
-  { id: "DWCZ_EZisEU", caption: "Trade result 2" },
-  { id: "DUDX512lUAn", caption: "Trade result 3" },
+type InstagramPermalinkType = "p" | "reel";
+
+type InstagramPost = {
+  id: string;
+  type: InstagramPermalinkType;
+  caption: string;
+};
+
+// Instagram IDs from public URLs.
+// Post format: https://www.instagram.com/p/POST_ID/
+// Reel format: https://www.instagram.com/reel/REEL_ID/
+const instagramPosts: InstagramPost[] = [
+  { id: "DVkeMhbl9np", type: "reel", caption: "Trade result 1" },
+  { id: "DWCZ_EZisEU", type: "reel", caption: "Trade result 2" },
+  { id: "DUDX512lUAn", type: "reel", caption: "Trade result 3" },
 ];
 
-function InstagramEmbed({ postId }: { postId: string }) {
+function InstagramEmbed({ post }: { post: InstagramPost }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const postUrl = `https://www.instagram.com/p/${postId}/`;
+  const postUrl = `https://www.instagram.com/${post.type}/${post.id}/`;
 
   useEffect(() => {
     // Process embeds after component mounts
@@ -93,7 +101,7 @@ export function CoursesSection() {
     >
       {/* Instagram embed script - loads once for all embeds */}
       <Script
-        src="//www.instagram.com/embed.js"
+        src="https://www.instagram.com/embed.js"
         strategy="afterInteractive"
         onLoad={() => {
           // Process all embeds after script loads
@@ -126,7 +134,7 @@ export function CoursesSection() {
         {/* Instagram Videos Grid */}
         <div className="mt-16 flex justify-center">
           {instagramPosts.map((post) => (
-            <InstagramEmbed key={post.id} postId={post.id} />
+            <InstagramEmbed key={post.id} post={post} />
           ))}
         </div>
 
