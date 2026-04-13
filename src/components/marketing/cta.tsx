@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 // Premium inline SVG icons
 const ArrowRightIcon = () => (
@@ -35,8 +34,7 @@ const benefits = [
 export function CTASection() {
   return (
     <section
-      className="relative overflow-hidden py-24 sm:py-32"
-      style={{ backgroundColor: "#4a0000" }}
+      className="relative overflow-hidden bg-kcm-burgundy py-24 sm:py-32"
     >
         {/* Premium background effects */}
       <div className="pointer-events-none absolute inset-0">
@@ -86,22 +84,19 @@ export function CTASection() {
 
           {/* CTA Buttons */}
           <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button
-              size="lg"
-              className="h-14 bg-kcm-silver px-10 text-base font-semibold text-kcm-burgundy shadow-lg shadow-kcm-silver/30 transition-all hover:bg-kcm-silver/90 hover:shadow-kcm-silver/50 hover:-translate-y-0.5"
+            <Link
+              href="/find-my-classes?np=t"
+              className="inline-flex h-14 items-center gap-2 bg-kcm-silver px-10 text-base font-semibold text-kcm-burgundy shadow-lg shadow-kcm-silver/30 transition-all hover:bg-kcm-silver/90 hover:shadow-kcm-silver/50 hover:-translate-y-0.5"
             >
-              <Link href="/find-my-classes?np=t" className="flex items-center gap-2">
-                Get Started Today
-                <ArrowRightIcon />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="h-14 border-background/20 bg-transparent px-10 text-base font-medium text-background transition-all hover:bg-background/10 hover:-translate-y-0.5"
+              Get Started Today
+              <ArrowRightIcon />
+            </Link>
+            <Link
+              href="#courses"
+              className="inline-flex h-14 items-center gap-2 border border-background/20 bg-transparent px-10 text-base font-medium text-background transition-all hover:bg-background/10 hover:-translate-y-0.5"
             >
-              <Link href="#courses">Explore Courses</Link>
-            </Button>
+              Explore Courses
+            </Link>
           </div>
 
           <p className="mt-8 text-sm text-background/40">

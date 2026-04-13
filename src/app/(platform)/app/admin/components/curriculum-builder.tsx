@@ -24,8 +24,8 @@ type Chapter = {
 
 const muxDot: Record<string, string> = {
   ready: "bg-kcm-green",
-  processing: "bg-kcm-red/60",
-  uploading: "bg-kcm-red/60",
+  processing: "bg-kcm-silver",
+  uploading: "bg-kcm-silver",
   errored: "bg-kcm-red",
   idle: "bg-muted-foreground/30",
 }

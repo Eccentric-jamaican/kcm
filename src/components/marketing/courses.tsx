@@ -91,15 +91,13 @@ export function CoursesSection() {
 
         {/* CTA */}
         <div className="mt-12 text-center">
-          <Button
-            size="lg"
-            className="h-12 rounded-full bg-kcm-red px-8 text-sm font-semibold text-white shadow-lg shadow-kcm-red/25 transition-all hover:bg-kcm-red/90 hover:shadow-kcm-red/40 hover:-translate-y-0.5"
+          <Link
+            href="https://app.kcmtrades.com/browse"
+            className="inline-flex h-12 items-center gap-2 rounded-full bg-kcm-red px-8 text-sm font-semibold text-white shadow-lg shadow-kcm-red/25 transition-all hover:bg-kcm-red/90 hover:shadow-kcm-red/40 hover:-translate-y-0.5"
           >
-            <Link href="https://app.kcmtrades.com/browse" className="flex items-center gap-2">
-              <TrendingUpIcon />
-              Start Trading Like This
-            </Link>
-          </Button>
+            <TrendingUpIcon />
+            Start Trading Like This
+          </Link>
         </div>
       </div>
     </section>

@@ -96,14 +96,15 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   /* KCM Trades brand colors - extracted from logo */
-  --bull: #00AA00;
-  --bull-foreground: #FFFFFF;
-  --bear: #CC0000;
-  --bear-foreground: #FFFFFF;
   --kcm-red: #CC0000;
   --kcm-burgundy: #660000;
   --kcm-silver: #C0C0C0;
   --kcm-green: #00AA00;
+  /* Aliases for forex/trading terminology */
+  --bull: var(--kcm-green);
+  --bull-foreground: #FFFFFF;
+  --bear: var(--kcm-red);
+  --bear-foreground: #FFFFFF;
 }
 
 .dark {
@@ -139,14 +140,15 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   /* KCM Trades brand colors - dark mode */
-  --bull: #32CD32;
-  --bull-foreground: #000000;
-  --bear: #FF3333;
-  --bear-foreground: #FFFFFF;
   --kcm-red: #FF3333;
   --kcm-burgundy: #8B0000;
   --kcm-silver: #E0E0E0;
   --kcm-green: #32CD32;
+  /* Aliases for forex/trading terminology */
+  --bull: var(--kcm-green);
+  --bull-foreground: #000000;
+  --bear: var(--kcm-red);
+  --bear-foreground: #FFFFFF;
 }
 
 @layer base {

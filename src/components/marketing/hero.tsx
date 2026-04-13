@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import {
   Avatar,
   AvatarFallback,
@@ -69,18 +68,20 @@ export function HeroSection() {
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:gap-4">
-            <Button size="lg" className="h-12 bg-kcm-red px-8 text-sm font-semibold text-white shadow-lg shadow-kcm-red/25 transition-all hover:bg-kcm-red/90 hover:shadow-kcm-red/40 hover:-translate-y-0.5">
-              <Link href="https://app.kcmtrades.com" className="flex items-center gap-2">
-                Start Learning
-                <ArrowRightIcon />
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" className="h-12 border-border/50 bg-background/50 px-8 text-sm font-medium backdrop-blur-sm transition-all hover:bg-background/80 hover:-translate-y-0.5">
-              <Link href="#courses" className="flex items-center gap-2">
-                <PlayIcon />
-                Explore Courses
-              </Link>
-            </Button>
+            <Link
+              href="https://app.kcmtrades.com"
+              className="inline-flex h-12 items-center gap-2 bg-kcm-red px-8 text-sm font-semibold text-white shadow-lg shadow-kcm-red/25 transition-all hover:bg-kcm-red/90 hover:shadow-kcm-red/40 hover:-translate-y-0.5"
+            >
+              Start Learning
+              <ArrowRightIcon />
+            </Link>
+            <Link
+              href="#courses"
+              className="inline-flex h-12 items-center gap-2 border border-border/50 bg-background/50 px-8 text-sm font-medium backdrop-blur-sm transition-all hover:bg-background/80 hover:-translate-y-0.5"
+            >
+              <PlayIcon />
+              Explore Courses
+            </Link>
           </div>
 
           <div className="mt-12 flex items-center gap-4">

@@ -69,9 +69,10 @@ export default async function AdminCoursePreviewPage({
                         <span className={cn(
                           "h-1.5 w-1.5 rounded-full",
                           lesson.muxStatus === "ready" && "bg-kcm-green",
-                          lesson.muxStatus === "processing" && "bg-kcm-red/60",
+                          lesson.muxStatus === "processing" && "bg-kcm-silver",
+                          lesson.muxStatus === "uploading" && "bg-kcm-silver",
                           lesson.muxStatus === "errored" && "bg-kcm-red",
-                          !["ready", "processing", "errored"].includes(lesson.muxStatus) && "bg-muted-foreground/30",
+                          !["ready", "processing", "uploading", "errored"].includes(lesson.muxStatus) && "bg-muted-foreground/30",
                         )} />
                       </div>
                     </div>
