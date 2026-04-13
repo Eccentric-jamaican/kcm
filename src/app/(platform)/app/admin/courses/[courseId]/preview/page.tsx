@@ -40,7 +40,7 @@ export default async function AdminCoursePreviewPage({
               {data.course.coverImageUrl ? (
                 <img src={data.course.coverImageUrl} alt={data.course.title} className="aspect-video w-full object-cover" />
               ) : (
-                <div className="aspect-video w-full bg-[radial-gradient(circle_at_top_left,rgba(27,156,72,0.2),transparent_45%),linear-gradient(180deg,#fafaf8,white)]" />
+                <div className="aspect-video w-full bg-[radial-gradient(circle_at_top_left,rgba(204,0,0,0.15),transparent_45%),linear-gradient(180deg,#faf8f8,white)]" />
               )}
             </div>
             <div>
@@ -68,9 +68,9 @@ export default async function AdminCoursePreviewPage({
                         <span>{lesson.state}</span>
                         <span className={cn(
                           "h-1.5 w-1.5 rounded-full",
-                          lesson.muxStatus === "ready" && "bg-bull",
-                          lesson.muxStatus === "processing" && "bg-blue-400",
-                          lesson.muxStatus === "errored" && "bg-bear",
+                          lesson.muxStatus === "ready" && "bg-kcm-green",
+                          lesson.muxStatus === "processing" && "bg-kcm-red/60",
+                          lesson.muxStatus === "errored" && "bg-kcm-red",
                           !["ready", "processing", "errored"].includes(lesson.muxStatus) && "bg-muted-foreground/30",
                         )} />
                       </div>

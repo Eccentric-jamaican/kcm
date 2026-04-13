@@ -217,10 +217,10 @@ export function LessonTranscript({
   return (
     <div className="space-y-6">
       {entries.map((entry, index) => (
-        <p key={`${entry.seconds}-${index}`} className="text-base leading-8 text-slate-600">
+        <p key={`${entry.seconds}-${index}`} className="text-base leading-8 text-muted-foreground">
           <button
             type="button"
-            className="mr-2 text-left text-slate-500 underline decoration-slate-300 underline-offset-2 hover:text-slate-700"
+            className="mr-2 text-left text-muted-foreground underline decoration-border underline-offset-2 hover:text-foreground"
             onClick={() => {
               emitSeek(lessonId, entry.seconds)
               jumpToPlayer()
@@ -236,7 +236,7 @@ export function LessonTranscript({
         ? fallbackBlocks
             .filter((block): block is { type: "paragraph"; text: string } => block.type === "paragraph")
             .map((block, index) => (
-              <p key={index} className="text-base leading-8 text-slate-600">
+              <p key={index} className="text-base leading-8 text-muted-foreground">
                 {block.text}
               </p>
             ))

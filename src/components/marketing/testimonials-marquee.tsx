@@ -139,7 +139,7 @@ export function TestimonialsMarqueeSection() {
           </p>
           <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
             Trusted by{" "}
-            <span className="text-bull">400+</span>{" "}
+            <span className="text-kcm-red">400+</span>{" "}
             Traders Worldwide
           </h2>
           <p className="mt-6 text-base leading-relaxed text-muted-foreground sm:text-lg">

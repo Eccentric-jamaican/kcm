@@ -81,11 +81,11 @@ export function MarketingFooter() {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-bull to-bull/70 shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-kcm-red to-kcm-burgundy shadow-sm">
                 <TrendingUpIcon />
               </div>
               <span className="text-lg font-semibold tracking-tight">
-                KCM <span className="text-bull">Trades</span>
+                KCM <span className="text-kcm-red">Trades</span>
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
@@ -177,7 +177,7 @@ export function MarketingFooter() {
         <div className="relative mt-16 h-32 sm:h-40 lg:h-48 overflow-visible">
           <div className="absolute -bottom-4 -left-4 sm:-left-8 lg:-left-16 select-none whitespace-nowrap pointer-events-none">
             <span className="text-[clamp(4rem,14vw,10rem)] font-black leading-none tracking-tighter text-foreground/[0.05]">
-              KCM <span className="text-bull/10">TRADES</span>
+              KCM <span className="text-kcm-red/10">TRADES</span>
             </span>
           </div>
         </div>

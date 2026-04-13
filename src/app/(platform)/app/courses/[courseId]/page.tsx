@@ -89,7 +89,7 @@ export default async function CourseDetailPage({
               {data.firstLessonSlug ? (
                 <Link
                   href={`/app/courses/${data.course.slug}/${data.firstLessonSlug}`}
-                  className={cn(buttonVariants({ variant: "default", size: "lg" }), "h-12 rounded-xl bg-blue-600 px-6 text-base hover:bg-blue-700")}
+                  className={cn(buttonVariants({ variant: "default", size: "lg" }), "h-12 rounded-xl bg-kcm-red px-6 text-base hover:bg-kcm-red/90")}
                 >
                   Start Learning
                 </Link>
@@ -127,7 +127,7 @@ export default async function CourseDetailPage({
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="absolute inset-0 h-full w-full bg-gradient-to-br from-blue-500/20 to-purple-500/20" />
+                  <div className="absolute inset-0 h-full w-full bg-gradient-to-br from-kcm-red/20 to-kcm-burgundy/20" />
                 )}
               </div>
               {/* Lesson list */}

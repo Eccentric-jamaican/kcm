@@ -50,7 +50,7 @@ function InstagramThumbnailCard({ post }: { post: InstagramPost }) {
       </div>
       <div className="flex items-center justify-between px-4 py-3">
         <p className="text-sm font-medium text-foreground">{post.caption}</p>
-        <span className="text-sm font-semibold text-bull">View on Instagram</span>
+        <span className="text-sm font-semibold text-kcm-red">View on Instagram</span>
       </div>
     </a>
   );
@@ -60,11 +60,10 @@ export function CoursesSection() {
   return (
     <section
       id="courses"
-      className="relative overflow-hidden py-24 sm:py-32"
-      style={{ backgroundColor: "#ffffff" }}
+      className="relative overflow-hidden bg-background py-24 sm:py-32"
     >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -right-40 top-1/2 h-[600px] w-[600px] -translate-y-1/2 rounded-full bg-bull/5 blur-3xl" />
+        <div className="absolute -right-40 top-1/2 h-[600px] w-[600px] -translate-y-1/2 rounded-full bg-kcm-red/5 blur-3xl" />
       </div>
 
       <div className="container relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -75,7 +74,7 @@ export function CoursesSection() {
           </p>
           <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
             Real Trades,{" "}
-            <span className="text-bull">Real Profits</span>
+            <span className="text-kcm-red">Real Profits</span>
           </h2>
           <p className="mt-6 text-balance text-base leading-relaxed text-muted-foreground sm:text-lg">
             Watch real trading results from Kenneth. Every video is live proof of the
@@ -94,7 +93,7 @@ export function CoursesSection() {
         <div className="mt-12 text-center">
           <Button
             size="lg"
-            className="h-12 rounded-full bg-bull px-8 text-sm font-semibold text-bull-foreground shadow-lg shadow-bull/25 transition-all hover:bg-bull/90 hover:shadow-bull/40 hover:-translate-y-0.5"
+            className="h-12 rounded-full bg-kcm-red px-8 text-sm font-semibold text-white shadow-lg shadow-kcm-red/25 transition-all hover:bg-kcm-red/90 hover:shadow-kcm-red/40 hover:-translate-y-0.5"
           >
             <Link href="https://app.kcmtrades.com/browse" className="flex items-center gap-2">
               <TrendingUpIcon />

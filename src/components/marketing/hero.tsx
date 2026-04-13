@@ -42,10 +42,10 @@ const socialProofAvatars = [
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-white pt-32">
+    <section className="relative min-h-screen overflow-hidden bg-background pt-32">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -right-40 -top-40 h-[600px] w-[600px] rounded-full bg-bull/5 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full bg-bear/5 blur-3xl" />
+        <div className="absolute -right-40 -top-40 h-[600px] w-[600px] rounded-full bg-kcm-red/5 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full bg-kcm-burgundy/5 blur-3xl" />
       </div>
 
       <div className="container relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -54,7 +54,7 @@ export function HeroSection() {
             href="https://t.me/yourtelegramgroup" 
             target="_blank"
             rel="noopener noreferrer"
-            className="mb-8 inline-flex items-center gap-2 rounded-full border border-bull/20 bg-bull/5 px-4 py-2 text-xs font-medium uppercase tracking-wider text-bull backdrop-blur-sm transition-colors hover:bg-bull/10"
+            className="mb-8 inline-flex items-center gap-2 rounded-full border border-kcm-red/20 bg-kcm-red/5 px-4 py-2 text-xs font-medium uppercase tracking-wider text-kcm-red backdrop-blur-sm transition-colors hover:bg-kcm-red/10"
           >
             <TelegramIcon />
             <span>Join telegram group</span>
@@ -69,13 +69,13 @@ export function HeroSection() {
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:gap-4">
-            <Button size="lg" className="h-12 bg-bull px-8 text-sm font-semibold text-bull-foreground shadow-lg shadow-bull/25 transition-all hover:bg-bull/90 hover:shadow-bull/40 hover:-translate-y-0.5">
+            <Button size="lg" className="h-12 bg-kcm-red px-8 text-sm font-semibold text-white shadow-lg shadow-kcm-red/25 transition-all hover:bg-kcm-red/90 hover:shadow-kcm-red/40 hover:-translate-y-0.5">
               <Link href="https://app.kcmtrades.com" className="flex items-center gap-2">
                 Start Learning
                 <ArrowRightIcon />
               </Link>
             </Button>
-            <Button variant="outline" size="lg" className="h-12 border-border/50 bg-white/50 px-8 text-sm font-medium backdrop-blur-sm transition-all hover:bg-white/80 hover:-translate-y-0.5">
+            <Button variant="outline" size="lg" className="h-12 border-border/50 bg-background/50 px-8 text-sm font-medium backdrop-blur-sm transition-all hover:bg-background/80 hover:-translate-y-0.5">
               <Link href="#courses" className="flex items-center gap-2">
                 <PlayIcon />
                 Explore Courses
@@ -98,7 +98,7 @@ export function HeroSection() {
             <div className="flex flex-col">
               <div className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <StarIcon key={i} className="h-3.5 w-3.5 text-bull" />
+                  <StarIcon key={i} className="h-3.5 w-3.5 text-kcm-red" />
                 ))}
               </div>
               <p className="text-xs text-muted-foreground">

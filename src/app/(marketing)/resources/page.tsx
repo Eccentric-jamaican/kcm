@@ -32,14 +32,14 @@ const documents = [
 
 export default function ResourcesPage() {
   return (
-    <main className="min-h-screen bg-white py-20">
+    <main className="min-h-screen bg-background py-20">
       <div className="mx-auto max-w-5xl px-6">
         {/* Header */}
         <div className="mb-16 text-center">
-          <h1 className="text-3xl font-semibold tracking-tight text-black">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             Business Registration
           </h1>
-          <p className="mt-4 text-gray-500">
+          <p className="mt-4 text-muted-foreground">
             KCM Trades LLC is a registered business entity in Delaware, United States.
           </p>
         </div>
@@ -49,16 +49,16 @@ export default function ResourcesPage() {
           {documents.map((doc) => (
             <div key={doc.id} className="group">
               {/* Placeholder */}
-              <div className="flex aspect-[4/3] items-center justify-center rounded-lg border border-gray-200 bg-gray-50">
+              <div className="flex aspect-[4/3] items-center justify-center rounded-lg border border-border bg-muted">
                 <div className="text-center">
-                  <div className="mx-auto mb-3 h-12 w-12 rounded-full border-2 border-dashed border-gray-300" />
-                  <span className="text-xs text-gray-400">Document preview</span>
+                  <div className="mx-auto mb-3 h-12 w-12 rounded-full border-2 border-dashed border-muted-foreground/30" />
+                  <span className="text-xs text-muted-foreground">Document preview</span>
                 </div>
               </div>
-              <p className="mt-3 text-sm font-medium text-gray-900">
+              <p className="mt-3 text-sm font-medium text-foreground">
                 {doc.title}
               </p>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-muted-foreground">
                 {doc.subtitle}
               </p>
             </div>
@@ -66,16 +66,16 @@ export default function ResourcesPage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-20 border-t border-gray-100 pt-10 text-center">
-          <p className="text-sm text-gray-400">
+        <div className="mt-20 border-t border-border pt-10 text-center">
+          <p className="text-sm text-muted-foreground">
             Questions? Contact us at{" "}
-            <a href="mailto:legal@kcmtrades.com" className="text-gray-600 hover:text-black">
+            <a href="mailto:legal@kcmtrades.com" className="text-foreground hover:text-kcm-red">
               legal@kcmtrades.com
             </a>
           </p>
           <Link
             href="/"
-            className="mt-6 inline-block text-sm text-gray-400 hover:text-black"
+            className="mt-6 inline-block text-sm text-muted-foreground hover:text-foreground"
           >
             ← Back to home
           </Link>

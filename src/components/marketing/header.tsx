@@ -36,7 +36,7 @@ export function MarketingHeader() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <span className="text-lg font-semibold tracking-tight">
-              KCM <span className="text-bull">Trades</span>
+              KCM <span className="text-kcm-red">Trades</span>
             </span>
           </Link>
 
@@ -58,7 +58,7 @@ export function MarketingHeader() {
             <Button variant="ghost" size="sm" className="h-8">
               <Link href="/sign-in?redirect_url=/app">Log in</Link>
             </Button>
-            <Button size="sm" className="h-8 bg-bull px-4 text-sm font-medium text-bull-foreground shadow-sm shadow-bull/20 transition-all hover:bg-bull/90 hover:shadow-bull/30">
+            <Button size="sm" className="h-8 bg-kcm-red px-4 text-sm font-medium text-white shadow-sm shadow-kcm-red/20 transition-all hover:bg-kcm-red/90 hover:shadow-kcm-red/30">
               <Link href="/find-my-classes?np=t">Get Started</Link>
             </Button>
           </div>
@@ -96,7 +96,7 @@ export function MarketingHeader() {
                 </Button>
               </Link>
               <Link href="/find-my-classes?np=t" className="w-full">
-                <Button className="w-full justify-center bg-bull text-bull-foreground">
+                <Button className="w-full justify-center bg-kcm-red text-white">
                   Get Started
                 </Button>
               </Link>
