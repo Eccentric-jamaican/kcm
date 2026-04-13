@@ -208,7 +208,7 @@ export function AdminCourseForm({ course }: { course: CourseFormValue }) {
               {form.coverImageUrl ? (
                 <img src={form.coverImageUrl} alt={form.coverImageAlt || form.title} className="aspect-video w-full object-cover" />
               ) : (
-                <div className="aspect-video w-full bg-[radial-gradient(circle_at_top_left,rgba(27,156,72,0.18),transparent_50%),linear-gradient(180deg,#fafaf8,white)]" />
+                <div className="aspect-video w-full bg-[radial-gradient(circle_at_top_left,rgba(204,0,0,0.15),transparent_50%),linear-gradient(180deg,#faf8f8,white)]" />
               )}
             </div>
             <div className="space-y-1.5">

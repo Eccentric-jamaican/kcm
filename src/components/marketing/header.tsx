@@ -36,7 +36,7 @@ export function MarketingHeader() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <span className="text-lg font-semibold tracking-tight">
-              KCM <span className="text-bull">Trades</span>
+              KCM <span className="text-kcm-red">Trades</span>
             </span>
           </Link>
 
@@ -55,12 +55,18 @@ export function MarketingHeader() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden items-center gap-3 md:flex">
-            <Button variant="ghost" size="sm" className="h-8">
-              <Link href="/sign-in?redirect_url=/app">Log in</Link>
-            </Button>
-            <Button size="sm" className="h-8 bg-bull px-4 text-sm font-medium text-bull-foreground shadow-sm shadow-bull/20 transition-all hover:bg-bull/90 hover:shadow-bull/30">
-              <Link href="/find-my-classes?np=t">Get Started</Link>
-            </Button>
+            <Link
+              href="/sign-in?redirect_url=/app"
+              className="inline-flex h-8 items-center justify-center rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              Log in
+            </Link>
+            <Link
+              href="/find-my-classes?np=t"
+              className="inline-flex h-8 items-center justify-center rounded-md bg-kcm-red px-4 text-sm font-medium text-white shadow-sm shadow-kcm-red/20 transition-all hover:bg-kcm-red/90 hover:shadow-kcm-red/30"
+            >
+              Get Started
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -90,15 +96,17 @@ export function MarketingHeader() {
               ))}
             </nav>
             <div className="mt-4 flex flex-col gap-2 border-t border-border/50 pt-4">
-              <Link href="/sign-in?redirect_url=/app" className="w-full">
-                <Button variant="outline" className="w-full justify-center">
-                  Log in
-                </Button>
+              <Link
+                href="/sign-in?redirect_url=/app"
+                className="inline-flex h-10 w-full items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-foreground"
+              >
+                Log in
               </Link>
-              <Link href="/find-my-classes?np=t" className="w-full">
-                <Button className="w-full justify-center bg-bull text-bull-foreground">
-                  Get Started
-                </Button>
+              <Link
+                href="/find-my-classes?np=t"
+                className="inline-flex h-10 w-full items-center justify-center rounded-md bg-kcm-red px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-kcm-red/90"
+              >
+                Get Started
               </Link>
             </div>
           </div>

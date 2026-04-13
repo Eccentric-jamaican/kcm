@@ -18,7 +18,7 @@ function FeaturedCourseCard({ course }: { course: CourseCard }) {
       {course.coverImageUrl ? (
         <img src={course.coverImageUrl} alt={course.title} className="aspect-video w-full object-cover" />
       ) : (
-        <div className="aspect-video w-full bg-[radial-gradient(circle_at_top_left,rgba(27,156,72,0.2),transparent_45%),linear-gradient(180deg,#fafaf8,white)]" />
+        <div className="aspect-video w-full bg-[radial-gradient(circle_at_top_left,rgba(204,0,0,0.15),transparent_45%),linear-gradient(180deg,#faf8f8,white)]" />
       )}
       <div className="space-y-2 p-4">
         <h3 className="line-clamp-2 text-[1.45rem] font-semibold leading-tight">{course.title}</h3>

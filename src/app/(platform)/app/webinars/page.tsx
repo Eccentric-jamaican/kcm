@@ -262,7 +262,7 @@ export default function WebinarsPage() {
                 {/* Content */}
                 <div className="space-y-2 p-4">
                   {/* Category badge */}
-                  <span className="inline-block rounded-full bg-bull/10 px-2.5 py-0.5 text-xs font-medium text-bull">
+                  <span className="inline-block rounded-full bg-kcm-red/10 px-2.5 py-0.5 text-xs font-medium text-kcm-red">
                     {webinar.category}
                   </span>
 

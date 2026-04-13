@@ -23,10 +23,10 @@ type Chapter = {
 }
 
 const muxDot: Record<string, string> = {
-  ready: "bg-bull",
-  processing: "bg-blue-400",
-  uploading: "bg-blue-400",
-  errored: "bg-bear",
+  ready: "bg-kcm-green",
+  processing: "bg-kcm-silver",
+  uploading: "bg-kcm-silver",
+  errored: "bg-kcm-red",
   idle: "bg-muted-foreground/30",
 }
 

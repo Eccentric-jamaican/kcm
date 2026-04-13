@@ -121,7 +121,7 @@ const FeatureBlock = ({
       </p>
       <a
         href={ctaHref}
-        className="inline-flex w-fit items-center justify-center rounded-lg bg-bull px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-bull/90 hover:shadow-lg hover:shadow-bull/25"
+        className="inline-flex w-fit items-center justify-center rounded-lg bg-kcm-red px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-kcm-red/90 hover:shadow-lg hover:shadow-kcm-red/25"
       >
         {ctaText}
       </a>
@@ -245,8 +245,8 @@ export function FeaturesSection() {
     >
       {/* Subtle background gradient */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-0 top-1/4 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-bull/3 blur-3xl" />
-        <div className="absolute bottom-1/4 right-0 h-[500px] w-[500px] translate-x-1/3 rounded-full bg-bear/3 blur-3xl" />
+        <div className="absolute left-0 top-1/4 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-kcm-red/3 blur-3xl" />
+        <div className="absolute bottom-1/4 right-0 h-[500px] w-[500px] translate-x-1/3 rounded-full bg-kcm-burgundy/3 blur-3xl" />
       </div>
 
       <div className="container relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -283,7 +283,7 @@ export function FeaturesSection() {
           </p>
           <a
             href="#pricing"
-            className="inline-flex items-center justify-center rounded-xl bg-foreground px-8 py-3 text-base font-semibold text-background transition-all duration-200 hover:bg-foreground/90 hover:shadow-xl"
+            className="inline-flex items-center justify-center rounded-xl bg-kcm-burgundy px-8 py-3 text-base font-semibold text-white transition-all duration-200 hover:bg-kcm-burgundy/90 hover:shadow-xl"
           >
             View All Courses
           </a>

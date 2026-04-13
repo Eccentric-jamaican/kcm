@@ -141,13 +141,12 @@ export function TestimonialsSection() {
 
   return (
     <section
-      className="relative overflow-hidden py-24 sm:py-32"
-      style={{ backgroundColor: "#ffffff" }}
+      className="relative overflow-hidden bg-background py-24 sm:py-32"
     >
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/4 top-0 h-[500px] w-[500px] rounded-full bg-bull/5 blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 h-[400px] w-[400px] rounded-full bg-bull/5 blur-3xl" />
+        <div className="absolute left-1/4 top-0 h-[500px] w-[500px] rounded-full bg-kcm-red/5 blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 h-[400px] w-[400px] rounded-full bg-kcm-burgundy/5 blur-3xl" />
       </div>
 
       <div className="container relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -158,7 +157,7 @@ export function TestimonialsSection() {
           </p>
           <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
             Trusted by{" "}
-            <span className="text-bull">400+</span>{" "}
+            <span className="text-kcm-red">400+</span>{" "}
             Traders Worldwide
           </h2>
           <p className="mt-6 text-balance text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -182,7 +181,7 @@ export function TestimonialsSection() {
             </div>
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-bull to-bull/70 text-sm font-bold text-white">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-kcm-red to-kcm-burgundy text-sm font-bold text-white">
                   MJ
                 </div>
                 <div>
@@ -199,13 +198,13 @@ export function TestimonialsSection() {
           {testimonials.map((testimonial, index) => (
             <div
               key={testimonial.id}
-              className={`group relative rounded-2xl border border-border/50 bg-white/50 p-6 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-bull/20 hover:shadow-xl hover:shadow-bull/5 ${
+              className={`group relative rounded-2xl border border-border/50 bg-card/50 p-6 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-kcm-red/20 hover:shadow-xl hover:shadow-kcm-red/5 ${
                 testimonial.featured ? "sm:col-span-2 lg:col-span-1" : ""
               }`}
               style={{ animationDelay: `${index * 100}ms` }}
             >
               {/* Quote Icon */}
-              <div className="absolute -top-3 -left-2 flex h-8 w-8 items-center justify-center rounded-full bg-bull/10 text-bull opacity-50">
+              <div className="absolute -top-3 -left-2 flex h-8 w-8 items-center justify-center rounded-full bg-kcm-red/10 text-kcm-red opacity-50">
                 <QuoteIcon />
               </div>
 
@@ -241,7 +240,7 @@ export function TestimonialsSection() {
               <p className="mt-4 text-xs text-muted-foreground">{testimonial.date}</p>
 
               {/* Hover accent */}
-              <div className="absolute bottom-0 left-6 right-6 h-0.5 rounded-full bg-gradient-to-r from-bull/0 via-bull/30 to-bull/0 opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="absolute bottom-0 left-6 right-6 h-0.5 rounded-full bg-gradient-to-r from-kcm-red/0 via-kcm-red/30 to-kcm-red/0 opacity-0 transition-opacity group-hover:opacity-100" />
             </div>
           ))}
         </div>
@@ -249,15 +248,15 @@ export function TestimonialsSection() {
         {/* Trust Stats */}
         <div className="mt-16 grid gap-8 border-t border-border/50 pt-16 sm:grid-cols-3">
           <div className="text-center">
-            <p className="text-3xl font-bold text-bull">4.9/5.0</p>
+            <p className="text-3xl font-bold text-kcm-red">4.9/5.0</p>
             <p className="mt-1 text-sm text-muted-foreground">Average Rating</p>
           </div>
           <div className="text-center">
-            <p className="text-3xl font-bold text-bull">400+</p>
+            <p className="text-3xl font-bold text-kcm-red">400+</p>
             <p className="mt-1 text-sm text-muted-foreground">Happy Students</p>
           </div>
           <div className="text-center">
-            <p className="text-3xl font-bold text-bull">$2M+</p>
+            <p className="text-3xl font-bold text-kcm-red">$2M+</p>
             <p className="mt-1 text-sm text-muted-foreground">Profits Generated</p>
           </div>
         </div>

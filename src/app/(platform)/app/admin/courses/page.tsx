@@ -57,7 +57,7 @@ export default async function AdminCoursesPage() {
                   <div>
                     <span className={cn(
                       "inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-medium capitalize",
-                      course.status === "published" && "bg-bull/10 text-bull",
+                      course.status === "published" && "bg-kcm-red/10 text-kcm-red",
                       course.status === "draft" && "bg-yellow-500/10 text-yellow-600",
                       course.status === "archived" && "bg-muted text-muted-foreground",
                     )}>

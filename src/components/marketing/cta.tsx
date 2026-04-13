@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 // Premium inline SVG icons
 const ArrowRightIcon = () => (
@@ -35,14 +34,13 @@ const benefits = [
 export function CTASection() {
   return (
     <section
-      className="relative overflow-hidden py-24 sm:py-32"
-      style={{ backgroundColor: "#0a0f17" }}
+      className="relative overflow-hidden bg-kcm-burgundy py-24 sm:py-32"
     >
-      {/* Premium background effects */}
+        {/* Premium background effects */}
       <div className="pointer-events-none absolute inset-0">
-        {/* Gradient orbs */}
-        <div className="absolute left-1/4 top-0 h-[400px] w-[400px] rounded-full bg-bull/20 blur-[100px]" />
-        <div className="absolute bottom-0 right-1/4 h-[300px] w-[300px] rounded-full bg-bull/10 blur-[80px]" />
+        {/* Gradient orbs - using kcm red tones */}
+        <div className="absolute left-1/4 top-0 h-[400px] w-[400px] rounded-full bg-kcm-red/30 blur-[100px]" />
+        <div className="absolute bottom-0 right-1/4 h-[300px] w-[300px] rounded-full bg-kcm-burgundy/40 blur-[80px]" />
       </div>
       
       <div className="container relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -53,7 +51,7 @@ export function CTASection() {
           </p>
           
           {/* Premium Badge */}
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-bull/30 bg-bull/10 px-4 py-2 text-sm font-medium text-bull backdrop-blur-sm">
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-kcm-silver/30 bg-kcm-silver/10 px-4 py-2 text-sm font-medium text-kcm-silver backdrop-blur-sm">
             <TrendingUpIcon />
             <span>Start your trading journey today</span>
           </div>
@@ -61,7 +59,7 @@ export function CTASection() {
           {/* Headline */}
           <h2 className="text-balance text-3xl font-bold tracking-tight text-background sm:text-4xl md:text-5xl">
             Ready to Start Your{" "}
-            <span className="bg-gradient-to-r from-bull to-bull/70 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-kcm-silver to-kcm-silver/70 bg-clip-text text-transparent">
               Trading Journey
             </span>?
           </h2>
@@ -86,22 +84,19 @@ export function CTASection() {
 
           {/* CTA Buttons */}
           <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button
-              size="lg"
-              className="h-14 bg-bull px-10 text-base font-semibold text-bull-foreground shadow-lg shadow-bull/30 transition-all hover:bg-bull/90 hover:shadow-bull/50 hover:-translate-y-0.5"
+            <Link
+              href="/find-my-classes?np=t"
+              className="inline-flex h-14 items-center gap-2 bg-kcm-silver px-10 text-base font-semibold text-kcm-burgundy shadow-lg shadow-kcm-silver/30 transition-all hover:bg-kcm-silver/90 hover:shadow-kcm-silver/50 hover:-translate-y-0.5"
             >
-              <Link href="/find-my-classes?np=t" className="flex items-center gap-2">
-                Get Started Today
-                <ArrowRightIcon />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="h-14 border-background/20 bg-transparent px-10 text-base font-medium text-background transition-all hover:bg-background/10 hover:-translate-y-0.5"
+              Get Started Today
+              <ArrowRightIcon />
+            </Link>
+            <Link
+              href="#courses"
+              className="inline-flex h-14 items-center gap-2 border border-background/20 bg-transparent px-10 text-base font-medium text-background transition-all hover:bg-background/10 hover:-translate-y-0.5"
             >
-              <Link href="#courses">Explore Courses</Link>
-            </Button>
+              Explore Courses
+            </Link>
           </div>
 
           <p className="mt-8 text-sm text-background/40">

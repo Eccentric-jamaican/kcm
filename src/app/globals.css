@@ -55,27 +55,32 @@
   --color-bull-foreground: var(--bull-foreground);
   --color-bear: var(--bear);
   --color-bear-foreground: var(--bear-foreground);
+  /* KCM Trades brand colors */
+  --color-kcm-red: var(--kcm-red);
+  --color-kcm-burgundy: var(--kcm-burgundy);
+  --color-kcm-silver: var(--kcm-silver);
+  --color-kcm-green: var(--kcm-green);
 }
 
 :root {
-  --background: oklch(0.97 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --background: #faf8f8;
+  --foreground: #1a0505;
+  --card: #ffffff;
+  --card-foreground: #1a0505;
+  --popover: #ffffff;
+  --popover-foreground: #1a0505;
+  --primary: #CC0000;
+  --primary-foreground: #ffffff;
+  --secondary: #f5f0f0;
+  --secondary-foreground: #660000;
+  --muted: #f5f0f0;
+  --muted-foreground: #8a6161;
+  --accent: #f5f0f0;
+  --accent-foreground: #660000;
+  --destructive: #DC143C;
+  --border: #e8dddd;
+  --input: #e8dddd;
+  --ring: #CC0000;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -90,32 +95,37 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  /* Forex candlestick colors - more visible greens and reds */
-  --bull: oklch(0.6 0.18 145);
-  --bull-foreground: oklch(0.98 0 0);
-  --bear: oklch(0.55 0.22 25);
-  --bear-foreground: oklch(0.98 0 0);
+  /* KCM Trades brand colors - extracted from logo */
+  --kcm-red: #CC0000;
+  --kcm-burgundy: #660000;
+  --kcm-silver: #C0C0C0;
+  --kcm-green: #00AA00;
+  /* Aliases for forex/trading terminology */
+  --bull: var(--kcm-green);
+  --bull-foreground: #FFFFFF;
+  --bear: var(--kcm-red);
+  --bear-foreground: #FFFFFF;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --background: #1a0505;
+  --foreground: #faf8f8;
+  --card: #2d0a0a;
+  --card-foreground: #faf8f8;
+  --popover: #2d0a0a;
+  --popover-foreground: #faf8f8;
+  --primary: #FF3333;
+  --primary-foreground: #1a0505;
+  --secondary: #3d1010;
+  --secondary-foreground: #faf8f8;
+  --muted: #3d1010;
+  --muted-foreground: #c4a0a0;
+  --accent: #3d1010;
+  --accent-foreground: #faf8f8;
+  --destructive: #FF4444;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #FF3333;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -129,11 +139,16 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  /* Forex candlestick colors - dark mode */
-  --bull: oklch(0.7 0.12 145);
-  --bull-foreground: oklch(0.15 0 0);
-  --bear: oklch(0.6 0.15 25);
-  --bear-foreground: oklch(0.98 0 0);
+  /* KCM Trades brand colors - dark mode */
+  --kcm-red: #FF3333;
+  --kcm-burgundy: #8B0000;
+  --kcm-silver: #E0E0E0;
+  --kcm-green: #32CD32;
+  /* Aliases for forex/trading terminology */
+  --bull: var(--kcm-green);
+  --bull-foreground: #000000;
+  --bear: var(--kcm-red);
+  --bear-foreground: #FFFFFF;
 }
 
 @layer base {

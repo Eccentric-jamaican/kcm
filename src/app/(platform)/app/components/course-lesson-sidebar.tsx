@@ -42,7 +42,7 @@ function SidebarLessonList({
             onClick={onNavigate}
             className={`flex items-center gap-3 px-5 py-3 text-sm transition-colors ${
               isActive
-                ? "bg-blue-50 text-blue-600"
+                ? "bg-kcm-red/10 text-kcm-red"
                 : "text-foreground hover:bg-muted/50"
             }`}
             title={collapsed ? lesson.title : undefined}
