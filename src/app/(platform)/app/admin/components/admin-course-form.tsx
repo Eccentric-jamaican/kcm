@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { api } from "@/lib/convex-api"
+import { getConvexErrorMessage } from "@/lib/convex-errors"
 
 type CourseFormValue = {
   _id: string
@@ -93,7 +94,7 @@ export function AdminCourseForm({ course }: { course: CourseFormValue }) {
       setMessage("Saved.")
       startTransition(() => router.refresh())
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to save.")
+      setMessage(getConvexErrorMessage(error, "Unable to save this course."))
     } finally {
       setSaving(false)
     }

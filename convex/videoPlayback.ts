@@ -6,6 +6,7 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { action, internalAction } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
+import { throwAppError } from "./lib/errors";
 
 function looksLikeBase64(value: string) {
   return /^[A-Za-z0-9+/=]+$/.test(value) && value.length % 4 === 0;
@@ -55,13 +56,26 @@ function getSigningEnv() {
   const privateKey = process.env.MUX_SIGNING_PRIVATE_KEY;
 
   if (!keyId || !privateKey) {
-    throw new Error("Missing MUX_SIGNING_KEY_ID or MUX_SIGNING_PRIVATE_KEY");
+    throwAppError(
+      "playback_unavailable",
+      "Private video playback is temporarily unavailable. Please try again shortly.",
+      { retryable: true },
+    );
   }
 
-  return {
-    keyId,
-    privateKey: ensurePkcs8Pem(privateKey),
-  };
+  try {
+    return {
+      keyId,
+      privateKey: ensurePkcs8Pem(privateKey),
+    };
+  } catch (error) {
+    console.error("Invalid Mux signing key configuration", error);
+    throwAppError(
+      "playback_unavailable",
+      "Private video playback is temporarily unavailable. Please try again shortly.",
+      { retryable: true },
+    );
+  }
 }
 
 async function createMuxPlaybackToken(params: {
@@ -174,7 +188,10 @@ export const getSignedPlaybackToken = action({
     });
 
     if (!playbackDetails.lesson.muxPlaybackId) {
-      throw new Error("Lesson video is not ready for playback");
+      throwAppError(
+        "lesson_video_not_ready",
+        "This lesson video is still being prepared. Please check back in a bit.",
+      );
     }
 
     const { keyId, privateKey } = getSigningEnv();
@@ -216,11 +233,17 @@ export const getSignedTranscriptVtt = action({
     });
 
     if (!playbackDetails.lesson.muxPlaybackId) {
-      throw new Error("Lesson video is not ready for playback");
+      throwAppError(
+        "lesson_video_not_ready",
+        "This lesson video is still being prepared. Please check back in a bit.",
+      );
     }
 
     if (!playbackDetails.lesson.transcriptTrackId || playbackDetails.lesson.transcriptStatus !== "ready") {
-      throw new Error("Transcript is not ready yet");
+      throwAppError(
+        "transcript_not_ready",
+        "The transcript is still being prepared. Please check back in a bit.",
+      );
     }
 
     const { keyId, privateKey } = getSigningEnv();
@@ -235,7 +258,15 @@ export const getSignedTranscriptVtt = action({
     const transcriptResponse = await fetch(transcriptUrl);
 
     if (!transcriptResponse.ok) {
-      throw new Error(`Failed to fetch transcript VTT (${transcriptResponse.status})`);
+      console.error("Failed to fetch signed transcript VTT", {
+        lessonId: args.lessonId,
+        status: transcriptResponse.status,
+      });
+      throwAppError(
+        "transcript_unavailable",
+        "The transcript isn't available right now. Please try again later.",
+        { retryable: true },
+      );
     }
 
     return {

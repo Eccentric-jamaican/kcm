@@ -16,6 +16,7 @@ import type * as http from "../http.js";
 import type * as httpHelpers from "../httpHelpers.js";
 import type * as lib_auth from "../lib/auth.js";
 import type * as lib_courseSeedData from "../lib/courseSeedData.js";
+import type * as lib_errors from "../lib/errors.js";
 import type * as muxSync from "../muxSync.js";
 import type * as muxWebhook from "../muxWebhook.js";
 import type * as progress from "../progress.js";
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   httpHelpers: typeof httpHelpers;
   "lib/auth": typeof lib_auth;
   "lib/courseSeedData": typeof lib_courseSeedData;
+  "lib/errors": typeof lib_errors;
   muxSync: typeof muxSync;
   muxWebhook: typeof muxWebhook;
   progress: typeof progress;

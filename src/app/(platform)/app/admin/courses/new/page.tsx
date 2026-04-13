@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { api } from "@/lib/convex-api"
+import { getConvexErrorMessage } from "@/lib/convex-errors"
 
 export default function NewCoursePage() {
   const router = useRouter()
@@ -31,7 +32,7 @@ export default function NewCoursePage() {
       })
       router.push(`/app/admin/courses/${courseId}`)
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to create course.")
+      setMessage(getConvexErrorMessage(error, "Unable to create course."))
       setCreating(false)
     }
   }

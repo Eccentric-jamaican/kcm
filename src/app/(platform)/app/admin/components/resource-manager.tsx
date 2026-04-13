@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { api } from "@/lib/convex-api"
+import { getConvexErrorMessage } from "@/lib/convex-errors"
 
 type Lesson = {
   _id: string
@@ -35,49 +36,61 @@ export function ResourceManager({
   const [message, setMessage] = useState<string | null>(null)
 
   async function handleCreateLink() {
-    await createResource({
-      lessonId: lesson._id as never,
-      type: "link",
-      title: title || "Reference link",
-      storageId: null,
-      url: url || null,
-      mimeType: null,
-      fileSize: null,
-      metadata: {},
-    })
-    setTitle("")
-    setUrl("")
-    setMessage("Link added.")
-    startTransition(() => router.refresh())
+    try {
+      await createResource({
+        lessonId: lesson._id as never,
+        type: "link",
+        title: title || "Reference link",
+        storageId: null,
+        url: url || null,
+        mimeType: null,
+        fileSize: null,
+        metadata: {},
+      })
+      setTitle("")
+      setUrl("")
+      setMessage("Link added.")
+      startTransition(() => router.refresh())
+    } catch (error) {
+      setMessage(getConvexErrorMessage(error, "Unable to add this resource."))
+    }
   }
 
   async function handleFileUpload(file: File | null) {
     if (!file) return
-    const { uploadUrl } = await generateUpload({ lessonId: lesson._id as never })
-    const response = await fetch(uploadUrl, {
-      method: "POST",
-      headers: { "Content-Type": file.type },
-      body: file,
-    })
-    const payload = (await response.json()) as { storageId: string }
-    await createResource({
-      lessonId: lesson._id as never,
-      type: "file",
-      title: title || file.name,
-      storageId: payload.storageId as never,
-      url: null,
-      mimeType: file.type || null,
-      fileSize: file.size,
-      metadata: {},
-    })
-    setTitle("")
-    setMessage(`${file.name} uploaded.`)
-    startTransition(() => router.refresh())
+    try {
+      const { uploadUrl } = await generateUpload({ lessonId: lesson._id as never })
+      const response = await fetch(uploadUrl, {
+        method: "POST",
+        headers: { "Content-Type": file.type },
+        body: file,
+      })
+      const payload = (await response.json()) as { storageId: string }
+      await createResource({
+        lessonId: lesson._id as never,
+        type: "file",
+        title: title || file.name,
+        storageId: payload.storageId as never,
+        url: null,
+        mimeType: file.type || null,
+        fileSize: file.size,
+        metadata: {},
+      })
+      setTitle("")
+      setMessage(`${file.name} uploaded.`)
+      startTransition(() => router.refresh())
+    } catch (error) {
+      setMessage(getConvexErrorMessage(error, "Unable to upload this resource."))
+    }
   }
 
   async function handleDelete(resourceId: string) {
-    await deleteResource({ resourceId: resourceId as never })
-    startTransition(() => router.refresh())
+    try {
+      await deleteResource({ resourceId: resourceId as never })
+      startTransition(() => router.refresh())
+    } catch (error) {
+      setMessage(getConvexErrorMessage(error, "Unable to remove this resource."))
+    }
   }
 
   const typeIcon: Record<string, string> = { link: "🔗", file: "📄", video: "🎬" }

@@ -3,6 +3,7 @@
 import { v } from "convex/values";
 import { action } from "./_generated/server";
 import { api, internal } from "./_generated/api";
+import { throwAppError } from "./lib/errors";
 
 type MuxDirectUploadResponse = {
   data?: {
@@ -31,7 +32,11 @@ function getMuxAuthHeader() {
   const tokenSecret = process.env.MUX_TOKEN_SECRET;
 
   if (!tokenId || !tokenSecret) {
-    throw new Error("Missing MUX_TOKEN_ID or MUX_TOKEN_SECRET");
+    throwAppError(
+      "mux_unavailable",
+      "Video uploads are temporarily unavailable. Please try again later.",
+      { retryable: true },
+    );
   }
 
   return `Basic ${Buffer.from(`${tokenId}:${tokenSecret}`).toString("base64")}`;
@@ -48,7 +53,7 @@ export const createMuxDirectUpload = action({
     });
 
     if (!lessonEditor) {
-      throw new Error("Lesson not found");
+      throwAppError("lesson_not_found", "This lesson could not be found.");
     }
 
     const response = await fetch("https://api.mux.com/video/v1/uploads", {
@@ -76,12 +81,28 @@ export const createMuxDirectUpload = action({
     });
 
     if (!response.ok) {
-      throw new Error(`Mux upload creation failed with ${response.status}`);
+      console.error("Mux upload creation failed", {
+        lessonId: args.lessonId,
+        status: response.status,
+      });
+      throwAppError(
+        "mux_upload_failed",
+        "Unable to start the video upload right now. Please try again.",
+        { retryable: true },
+      );
     }
 
     const payload = (await response.json()) as MuxDirectUploadResponse;
     if (!payload.data?.id || !payload.data?.url) {
-      throw new Error("Mux did not return an upload id and url");
+      console.error("Mux upload creation returned an incomplete payload", {
+        lessonId: args.lessonId,
+        payload,
+      });
+      throwAppError(
+        "mux_upload_failed",
+        "Mux did not return a valid upload session. Please try again.",
+        { retryable: true },
+      );
     }
 
     await ctx.runMutation(api.admin.attachMuxUploadToLesson, {
@@ -108,7 +129,7 @@ export const refreshMuxAsset = action({
     });
 
     if (!lessonEditor?.lesson.muxAssetId) {
-      throw new Error("Lesson does not have a Mux asset yet");
+      throwAppError("mux_asset_missing", "This lesson doesn't have a video asset yet.");
     }
 
     const response = await fetch(`https://api.mux.com/video/v1/assets/${lessonEditor.lesson.muxAssetId}`, {
@@ -118,7 +139,16 @@ export const refreshMuxAsset = action({
     });
 
     if (!response.ok) {
-      throw new Error(`Mux asset refresh failed with ${response.status}`);
+      console.error("Mux asset refresh failed", {
+        lessonId: args.lessonId,
+        muxAssetId: lessonEditor.lesson.muxAssetId,
+        status: response.status,
+      });
+      throwAppError(
+        "mux_refresh_failed",
+        "Unable to refresh the video status right now. Please try again.",
+        { retryable: true },
+      );
     }
 
     const payload = (await response.json()) as MuxAssetResponse;

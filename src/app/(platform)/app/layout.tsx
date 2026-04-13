@@ -18,6 +18,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { SearchIcon } from "@hugeicons/core-free-icons"
 import { api } from "../../../../convex/_generated/api"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { getConvexErrorMessage } from "@/lib/convex-errors"
 
 const authEnabled = Boolean(
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.NEXT_PUBLIC_CONVEX_URL
@@ -31,14 +32,11 @@ function PlatformHeader({
   canAccessAdmin: boolean
 }) {
   const pathname = usePathname()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileMenuPath, setMobileMenuPath] = useState<string | null>(null)
   const isBrowsePage = pathname === "/app/browse"
   const showDesktopSearch = !isBrowsePage
   const showMobileSearch = !isBrowsePage
-
-  useEffect(() => {
-    setMobileMenuOpen(false)
-  }, [pathname])
+  const mobileMenuOpen = mobileMenuPath === pathname
 
   return (
     <header className="border-b bg-background">
@@ -127,14 +125,17 @@ function PlatformHeader({
           </div>
         </div>
 
-        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <Sheet
+          open={mobileMenuOpen}
+          onOpenChange={(nextOpen) => setMobileMenuPath(nextOpen ? pathname : null)}
+        >
           <button
             type="button"
             aria-label="Open navigation menu"
             aria-expanded={mobileMenuOpen}
             aria-controls="platform-mobile-navigation"
             className="inline-flex h-10 w-10 items-center justify-center rounded-md text-2xl text-foreground/85 transition-colors hover:bg-muted md:hidden"
-            onClick={() => setMobileMenuOpen(true)}
+            onClick={() => setMobileMenuPath(pathname)}
           >
             ☰
           </button>
@@ -169,7 +170,7 @@ function PlatformHeader({
                     <Link
                       key={`${item.href}:${item.label}`}
                       href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
+                      onClick={() => setMobileMenuPath(null)}
                       className={`flex items-center rounded-xl px-4 py-3 text-base font-medium transition-colors ${
                         isActive
                           ? "bg-foreground text-background"
@@ -273,7 +274,7 @@ function AuthenticatedPlatformLayout({
       })
       .catch((error: unknown) => {
         if (!cancelled) {
-          setSyncError(error instanceof Error ? error.message : "Unable to sync your account.")
+          setSyncError(getConvexErrorMessage(error, "Unable to sync your account."))
         }
       })
 

@@ -3,6 +3,7 @@
 import { v } from "convex/values";
 import { internalQuery, query } from "./_generated/server";
 import { requireCoursePlaybackAccess, requireViewer } from "./lib/auth";
+import { throwAppError } from "./lib/errors";
 
 async function getSignedStorageUrl(ctx: any, storageId: any) {
   if (!storageId) {
@@ -256,17 +257,17 @@ export const getLessonPlaybackDetails = internalQuery({
   handler: async (ctx, args) => {
     const lesson = await ctx.db.get(args.lessonId);
     if (!lesson) {
-      throw new Error("Lesson not found");
+      throwAppError("lesson_not_found", "This lesson could not be found.");
     }
 
     const { course } = await requireCoursePlaybackAccess(ctx, lesson.courseId);
 
     if (course.status !== "published") {
-      throw new Error("Lesson is not published");
+      throwAppError("lesson_not_published", "This lesson is not available right now.");
     }
 
     if (lesson.state !== "published") {
-      throw new Error("Lesson is not published");
+      throwAppError("lesson_not_published", "This lesson is not available right now.");
     }
 
     return {

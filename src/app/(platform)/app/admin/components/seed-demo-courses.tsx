@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useMutation, useQuery } from "convex/react"
 import { Button } from "@/components/ui/button"
 import { api } from "@/lib/convex-api"
+import { getConvexErrorMessage } from "@/lib/convex-errors"
 
 export function SeedDemoCourses() {
   const router = useRouter()
@@ -25,7 +26,7 @@ export function SeedDemoCourses() {
       setMessage(result.message ?? `Seeded ${result.count} demo courses.`)
       startTransition(() => router.refresh())
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to seed demo courses.")
+      setMessage(getConvexErrorMessage(error, "Unable to seed demo courses."))
     } finally {
       setPending(false)
     }

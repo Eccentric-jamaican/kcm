@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { api } from "@/lib/convex-api"
+import { getConvexErrorMessage } from "@/lib/convex-errors"
 
 type LessonRecord = {
   _id: string
@@ -87,7 +88,7 @@ export function LessonEditorForm({
       setMessage("Saved.")
       startTransition(() => router.refresh())
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to save.")
+      setMessage(getConvexErrorMessage(error, "Unable to save this lesson."))
     } finally {
       setSaving(false)
     }
@@ -109,7 +110,7 @@ export function LessonEditorForm({
       setMessage("Uploaded. Mux is processing.")
       startTransition(() => router.refresh())
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Upload failed.")
+      setMessage(getConvexErrorMessage(error, "Upload failed."))
     }
   }
 
@@ -119,7 +120,7 @@ export function LessonEditorForm({
       setMessage("Mux refreshed.")
       startTransition(() => router.refresh())
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Refresh failed.")
+      setMessage(getConvexErrorMessage(error, "Refresh failed."))
     }
   }
 

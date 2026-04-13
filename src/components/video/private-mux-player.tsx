@@ -8,6 +8,7 @@ import MuxPlayer from "@mux/mux-player-react"
 import type MuxPlayerElement from "@mux/mux-player"
 import { useAction, useMutation, useQuery } from "convex/react"
 import { api } from "@/lib/convex-api"
+import { getConvexErrorMessage } from "@/lib/convex-errors"
 import { LESSON_SEEK_EVENT, type LessonSeekEventDetail } from "@/lib/lesson-playback-events"
 
 type PlaybackPolicy = "public" | "signed" | null
@@ -95,7 +96,7 @@ export function PrivateMuxPlayer({
         if (!cancelled) {
           setState({
             kind: "error",
-            message: error instanceof Error ? error.message : "Unable to load this lesson video.",
+            message: getConvexErrorMessage(error, "Unable to load this lesson video."),
           })
         }
       })

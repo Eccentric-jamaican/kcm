@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import type { ActionCtx, MutationCtx, QueryCtx } from "../_generated/server";
 import type { Doc, Id } from "../_generated/dataModel";
+import { throwAppError } from "./errors";
 
 export const roleValidator = v.union(v.literal("student"), v.literal("maintainer"), v.literal("admin"));
 
@@ -41,7 +42,7 @@ export async function requireIdentity(ctx: AnyCtx) {
   const identity = await ctx.auth.getUserIdentity();
 
   if (!identity) {
-    throw new Error("Not authenticated");
+    throwAppError("not_authenticated", "Please sign in to continue.");
   }
 
   return identity;
@@ -61,7 +62,11 @@ export async function requireViewer(ctx: DataCtx): Promise<ViewerRecord> {
   const { identity, user } = await getCurrentUserRecord(ctx);
 
   if (!user) {
-    throw new Error("User profile not found");
+    throwAppError(
+      "user_profile_not_found",
+      "We couldn't load your account right now. Please refresh and try again.",
+      { retryable: true },
+    );
   }
 
   const role = canBootstrapAsAdmin(identity.email) ? "admin" : getRoleFromUser(user);
@@ -78,7 +83,7 @@ export async function requireAdminOrMaintainer(ctx: DataCtx) {
   const viewer = await requireViewer(ctx);
 
   if (!viewer.isMaintainer) {
-    throw new Error("Forbidden");
+    throwAppError("forbidden", "You don't have access to this area.");
   }
 
   return viewer;
@@ -88,7 +93,7 @@ export async function requireAdmin(ctx: DataCtx) {
   const viewer = await requireViewer(ctx);
 
   if (!viewer.isAdmin) {
-    throw new Error("Forbidden");
+    throwAppError("forbidden", "You don't have access to this area.");
   }
 
   return viewer;
@@ -99,11 +104,11 @@ export async function assertCanManageCourse(ctx: DataCtx, courseId: Id<"courses"
   const course = await ctx.db.get(courseId);
 
   if (!course) {
-    throw new Error("Course not found");
+    throwAppError("course_not_found", "This course could not be found.");
   }
 
   if (!viewer.isAdmin && course.maintainerUserId !== viewer.user._id) {
-    throw new Error("Forbidden");
+    throwAppError("forbidden", "You don't have access to this course.");
   }
 
   return { viewer, course };
@@ -114,7 +119,7 @@ export async function requireCoursePlaybackAccess(ctx: DataCtx, courseId: Id<"co
   const course = await ctx.db.get(courseId);
 
   if (!course) {
-    throw new Error("Course not found");
+    throwAppError("course_not_found", "This course could not be found.");
   }
 
   if (viewer.isAdmin || course.maintainerUserId === viewer.user._id) {
@@ -129,7 +134,7 @@ export async function requireCoursePlaybackAccess(ctx: DataCtx, courseId: Id<"co
     .unique();
 
   if (!access || !["owner", "staff", "student"].includes(access.accessType)) {
-    throw new Error("Forbidden");
+    throwAppError("forbidden", "You don't have access to this course.");
   }
 
   return { viewer, course };
